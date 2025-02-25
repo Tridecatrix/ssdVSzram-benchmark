@@ -22,9 +22,8 @@ mkdir $RESULTSDIR/system-util
 ./system_util/start_statistics.sh -d $RESULTSDIR/system-util
 echo "statistics started"
 
-#fio config/job-file-async.ini --output=$RESULTSDIR/fio/log.txt
-#echo "fio started"
-sleep 1
+fio config/job-file-async.ini config/job-file-sync-mmap.ini config/job-file-sync-syscall.ini --output=$RESULTSDIR/fio/log.txt
+echo "fio started"
 
 ./system_util/stop_statistics.sh -d $RESULTSDIR/system-util
 echo "statistics ended"
