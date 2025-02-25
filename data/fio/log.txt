@@ -1,3 +1,0 @@
-Bad option <readonly=1>
-Did you mean create_only?
-fio: job sequential-reads-ssd dropped
