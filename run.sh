@@ -5,7 +5,8 @@
 ./system_util/start_statistics.sh -d data/system-util
 echo "statistics started"
 
-fio job-file.ini --output=data/fio/log.txt
+#fio config/job-file-async.ini --output=data/fio/log.txt
+sleep 1
 
 ./system_util/stop_statistics.sh -d data/system-util
 echo "statistics ended"
