@@ -1,0 +1,26 @@
+job_name: (groupid=0, jobs=4): err= 0: pid=1577899: Tue Oct 24 10:30:35 2023
+  read: IOPS=495, BW=1982KiB/s (2029kB/s)(233MiB/120604msec)
+    slat (usec): min=3, max=189863, avg=7920.49, stdev=21236.62
+    clat (msec): min=425, max=3830, avg=2020.51, stdev=376.79
+     lat (msec): min=495, max=3881, avg=2028.44, stdev=377.61
+    clat percentiles (msec):
+     |  1.00th=[ 1452],  5.00th=[ 1552], 10.00th=[ 1603], 20.00th=[ 1670],
+     | 30.00th=[ 1754], 40.00th=[ 1838], 50.00th=[ 1955], 60.00th=[ 2072],
+     | 70.00th=[ 2232], 80.00th=[ 2400], 90.00th=[ 2567], 95.00th=[ 2702],
+     | 99.00th=[ 2869], 99.50th=[ 2937], 99.90th=[ 3138], 99.95th=[ 3239],
+     | 99.99th=[ 3507]
+   bw (  KiB/s): min=   47, max= 2384, per=100.00%, avg=1999.10, stdev=54.46, samples=940
+   iops        : min=   11, max=  596, avg=499.67, stdev=13.63, samples=940
+  lat (msec)   : 500=0.02%, 750=0.13%, 1000=0.21%, 2000=54.22%, >=2000=45.43%
+  cpu          : usr=0.04%, sys=1.59%, ctx=7782, majf=0, minf=1206
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=0.2%, >=64=99.6%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.1%
+     issued rwts: total=59754,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=256
+
+Run status group 0 (all jobs):
+   READ: bw=1982KiB/s (2029kB/s), 1982KiB/s-1982KiB/s (2029kB/s-2029kB/s), io=233MiB (245MB), run=120604-120604msec
+
+Disk stats (read/write):
+  sdb: ios=59693/87, merge=8/31, ticks=29888589/4665, in_queue=29774044, util=98.62%

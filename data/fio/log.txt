@@ -1,0 +1,2 @@
+Bad option <eta-newline=1>
+fio: job global dropped
