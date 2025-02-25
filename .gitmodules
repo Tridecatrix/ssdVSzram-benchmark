@@ -1,3 +1,6 @@
 [submodule "system_util"]
 	path = system_util
 	url = https://github.com/jackkolokasis/system_util
+[submodule "fio_scripts"]
+	path = fio_scripts
+	url = https://github.com/jackkolokasis/fio_scripts.git

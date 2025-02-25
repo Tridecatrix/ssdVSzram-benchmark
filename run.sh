@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# run this script with command ./run.sh > data/log.txt & 2>&1
+# run this script with command nohup ./run.sh > data/log.txt & 2>&1
+# if wanting to run fio only to check that job files are parsed correctly, use --parse-only option on fio below
 
 if [[ $# -gt 1 ]]; then
     # expname is name of experiment, which is appended to the result directory name created in directory data

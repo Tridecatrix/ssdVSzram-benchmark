@@ -1,0 +1,4 @@
+statistics started
+fio started
+statistics ended
+data extracted
