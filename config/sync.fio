@@ -1,0 +1,11 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=${BS}
+ioengine=${IOENGINE}
+numjobs=${N_PAR_REQUESTS}
+group_reporting
+size=${SIZE}/${N_PAR_REQUESTS}
+allow_file_create=1
+directory=${DIR}
+rw=${RW}
