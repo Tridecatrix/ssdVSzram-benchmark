@@ -1,6 +1,6 @@
 [submodule "system_util"]
 	path = system_util
-	url = https://github.com/jackkolokasis/system_util
+	url = git@github.com:Tridecatrix/system_util.git
 [submodule "fio_scripts"]
 	path = fio_scripts
-	url = https://github.com/jackkolokasis/fio_scripts.git
+	url = git@github.com:jackkolokasis/fio_scripts.git
