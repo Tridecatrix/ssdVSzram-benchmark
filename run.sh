@@ -1,13 +1,14 @@
 #!/bin/bash
 
-# run this script with command nohup ./run.sh > data/log.txt & 2>&1
+# run this script with this command: 
+# nohup ./run.sh > data/log.txt & 2>&1
 
 # ----------------------------------
 # setup
 # ----------------------------------
 
 # set this to "--parse-only" to run fio with parse-only option (just check that job files parse), else set to blank 
-testrunopt="--parse-only"
+testrunopt=""
 
 # constants
 size="32G"
