@@ -1,0 +1,32 @@
+job: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=sync, iodepth=1
+...
+fio-3.16
+Starting 64 processes
+
+job: (groupid=0, jobs=64): err=28 (file:io_u.c:1787, func=io_u error, error=No space left on device): pid=914649: Wed Feb 26 19:41:27 2025
+  write: IOPS=453k, BW=1768MiB/s (1854MB/s)(207GiB/120001msec); 0 zone resets
+    clat (usec): min=6, max=36036, avg=14.27, stdev=21.11
+     lat (usec): min=6, max=36036, avg=14.30, stdev=21.11
+    clat percentiles (nsec):
+     |  1.00th=[11712],  5.00th=[12352], 10.00th=[12608], 20.00th=[12992],
+     | 30.00th=[13248], 40.00th=[13376], 50.00th=[13632], 60.00th=[13888],
+     | 70.00th=[14272], 80.00th=[14656], 90.00th=[15296], 95.00th=[17024],
+     | 99.00th=[29568], 99.50th=[31104], 99.90th=[35072], 99.95th=[40192],
+     | 99.99th=[49408]
+   bw (  MiB/s): min=  640, max= 1646, per=90.61%, avg=1602.05, stdev=13.13, samples=1608
+   iops        : min=163925, max=421510, avg=410123.01, stdev=3360.45, samples=1608
+  lat (usec)   : 10=0.07%, 20=96.46%, 50=3.46%, 100=0.01%, 250=0.01%
+  lat (usec)   : 500=0.01%, 750=0.01%, 1000=0.01%
+  lat (msec)   : 2=0.01%, 4=0.01%, 10=0.01%, 20=0.01%, 50=0.01%
+  cpu          : usr=2.72%, sys=89.27%, ctx=10526, majf=0, minf=2362
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,54317895,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+  WRITE: bw=1768MiB/s (1854MB/s), 1768MiB/s-1768MiB/s (1854MB/s-1854MB/s), io=207GiB (222GB), run=120001-120001msec
+
+Disk stats (read/write):
+  zram0: ios=0/54233617, merge=0/0, ticks=0/671760, in_queue=671760, util=99.92%

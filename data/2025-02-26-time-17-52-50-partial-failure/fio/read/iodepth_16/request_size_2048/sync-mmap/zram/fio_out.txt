@@ -1,0 +1,10 @@
+job: (g=0): rw=read, bs=(R) 2048B-2048B, (W) 2048B-2048B, (T) 2048B-2048B, ioengine=mmap, iodepth=1
+...
+fio-3.16
+Starting 16 processes
+
+
+Run status group 0 (all jobs):
+
+Disk stats (read/write):
+  zram0: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%

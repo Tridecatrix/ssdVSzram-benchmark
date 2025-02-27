@@ -1,0 +1,103 @@
+job: (g=0): rw=rw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=mmap, iodepth=1
+...
+fio-3.16
+Starting 64 processes
+fio: pid=913252, got signal=7
+fio: pid=913253, got signal=7
+fio: pid=913254, got signal=7
+fio: pid=913255, got signal=7
+fio: pid=913256, got signal=7
+fio: pid=913257, got signal=7
+fio: pid=913258, got signal=7
+fio: pid=913259, got signal=7
+fio: pid=913260, got signal=7
+fio: pid=913262, got signal=7
+fio: pid=913263, got signal=7
+fio: pid=913264, got signal=7
+fio: pid=913265, got signal=7
+fio: pid=913266, got signal=7
+fio: pid=913267, got signal=7
+fio: pid=913268, got signal=7
+fio: pid=913269, got signal=7
+fio: pid=913270, got signal=7
+fio: pid=913272, got signal=7
+fio: pid=913273, got signal=7
+fio: pid=913275, got signal=7
+fio: pid=913277, got signal=7
+fio: pid=913278, got signal=7
+fio: pid=913284, got signal=7
+fio: pid=913285, got signal=7
+fio: pid=913286, got signal=7
+fio: pid=913287, got signal=7
+fio: pid=913288, got signal=7
+fio: pid=913292, got signal=7
+fio: pid=913293, got signal=7
+fio: pid=913294, got signal=7
+fio: pid=913296, got signal=7
+fio: pid=913297, got signal=7
+fio: pid=913298, got signal=7
+fio: pid=913299, got signal=7
+fio: pid=913300, got signal=7
+fio: pid=913301, got signal=7
+fio: pid=913302, got signal=7
+fio: pid=913303, got signal=7
+fio: pid=913304, got signal=7
+fio: pid=913305, got signal=7
+fio: pid=913306, got signal=7
+fio: pid=913307, got signal=7
+fio: pid=913261, got signal=7
+fio: pid=913291, got signal=7
+fio: pid=913295, got signal=7
+fio: pid=913279, got signal=7
+fio: pid=913282, got signal=7
+fio: pid=913290, got signal=7
+fio: pid=913283, got signal=7
+fio: pid=913289, got signal=7
+fio: pid=913281, got signal=7
+fio: pid=913276, got signal=7
+fio: pid=913274, got signal=7
+fio: pid=913271, got signal=7
+fio: pid=913280, got signal=7
+fio: pid=913314, got signal=7
+
+job: (groupid=0, jobs=64): err= 0: pid=913251: Wed Feb 26 19:34:11 2025
+  read: IOPS=342k, BW=1243MiB/s (1303MB/s)(112GiB/92277msec)
+    clat (nsec): min=501, max=5368.1k, avg=2945.18, stdev=19705.72
+     lat (nsec): min=525, max=5368.1k, avg=2973.36, stdev=19705.75
+    clat percentiles (nsec):
+     |  1.00th=[   620],  5.00th=[   668], 10.00th=[   708], 20.00th=[   756],
+     | 30.00th=[   796], 40.00th=[   836], 50.00th=[   884], 60.00th=[   948],
+     | 70.00th=[  1032], 80.00th=[  1128], 90.00th=[  1272], 95.00th=[  3056],
+     | 99.00th=[144384], 99.50th=[197632], 99.90th=[214016], 99.95th=[216064],
+     | 99.99th=[226304]
+   bw (  MiB/s): min= 1171, max= 1486, per=100.00%, avg=1380.22, stdev= 8.07, samples=1371
+   iops        : min=299793, max=380498, avg=353333.61, stdev=2065.46, samples=1371
+  write: IOPS=342k, BW=1243MiB/s (1303MB/s)(112GiB/92277msec); 0 zone resets
+    clat (usec): min=5, max=5331, avg=18.23, stdev=20.25
+     lat (usec): min=5, max=5331, avg=18.28, stdev=20.29
+    clat percentiles (usec):
+     |  1.00th=[   15],  5.00th=[   16], 10.00th=[   16], 20.00th=[   17],
+     | 30.00th=[   17], 40.00th=[   17], 50.00th=[   18], 60.00th=[   18],
+     | 70.00th=[   18], 80.00th=[   19], 90.00th=[   20], 95.00th=[   21],
+     | 99.00th=[   27], 99.50th=[  155], 99.90th=[  223], 99.95th=[  229],
+     | 99.99th=[  239]
+   bw (  MiB/s): min= 1172, max= 1481, per=100.00%, avg=1380.00, stdev= 7.98, samples=1368
+   iops        : min=300285, max=379342, avg=353279.33, stdev=2043.47, samples=1368
+  lat (nsec)   : 750=9.44%, 1000=23.67%
+  lat (usec)   : 2=14.27%, 4=1.62%, 10=0.48%, 20=47.45%, 50=2.27%
+  lat (usec)   : 100=0.01%, 250=0.79%, 500=0.01%, 750=0.01%, 1000=0.01%
+  lat (msec)   : 2=0.01%, 4=0.01%, 10=0.01%
+  cpu          : usr=8.53%, sys=91.46%, ctx=1032, majf=7, minf=30843259
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=31591392,31589027,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=1243MiB/s (1303MB/s), 1243MiB/s-1243MiB/s (1303MB/s-1303MB/s), io=112GiB (120GB), run=92277-92277msec
+  WRITE: bw=1243MiB/s (1303MB/s), 1243MiB/s-1243MiB/s (1303MB/s-1303MB/s), io=112GiB (120GB), run=92277-92277msec
+
+Disk stats (read/write):
+  zram0: ios=31598178/31589105, merge=0/0, ticks=34476/395912, in_queue=430388, util=99.22%
+fio: file hash not empty on exit
