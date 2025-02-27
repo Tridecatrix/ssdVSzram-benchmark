@@ -1,0 +1,39 @@
+job: (g=0): rw=write, bs=(R) 2048B-2048B, (W) 2048B-2048B, (T) 2048B-2048B, ioengine=io_uring, iodepth=8
+fio-3.16
+Starting 1 process
+
+fio: terminating on signal 15
+job: (g=0): rw=write, bs=(R) 2048B-2048B, (W) 2048B-2048B, (T) 2048B-2048B, ioengine=io_uring, iodepth=8
+fio-3.16
+Starting 1 process
+
+fio: terminating on signal 15
+
+job: (groupid=0, jobs=1): err= 0: pid=1065074: Thu Feb 27 20:04:12 2025
+  write: IOPS=61.6k, BW=120MiB/s (126MB/s)(956MiB/7942msec); 0 zone resets
+    slat (nsec): min=504, max=215779, avg=3348.77, stdev=2218.17
+    clat (usec): min=26, max=26969, avg=125.87, stdev=138.61
+     lat (usec): min=33, max=26970, avg=129.34, stdev=138.56
+    clat percentiles (usec):
+     |  1.00th=[   84],  5.00th=[   88], 10.00th=[   91], 20.00th=[   96],
+     | 30.00th=[  101], 40.00th=[  105], 50.00th=[  110], 60.00th=[  114],
+     | 70.00th=[  119], 80.00th=[  128], 90.00th=[  155], 95.00th=[  204],
+     | 99.00th=[  586], 99.50th=[  750], 99.90th=[  881], 99.95th=[  922],
+     | 99.99th=[ 2212]
+   bw (  KiB/s): min=106712, max=127616, per=99.85%, avg=123050.93, stdev=5918.65, samples=15
+   iops        : min=53356, max=63808, avg=61525.47, stdev=2959.33, samples=15
+  lat (usec)   : 50=0.04%, 100=29.13%, 250=67.62%, 500=2.06%, 750=0.66%
+  lat (usec)   : 1000=0.47%
+  lat (msec)   : 2=0.01%, 4=0.01%, 10=0.01%, 50=0.01%
+  cpu          : usr=7.52%, sys=27.36%, ctx=146932, majf=0, minf=18
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=100.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.1%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,489366,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=8
+
+Run status group 0 (all jobs):
+  WRITE: bw=120MiB/s (126MB/s), 120MiB/s-120MiB/s (126MB/s-126MB/s), io=956MiB (1002MB), run=7942-7942msec
+
+Disk stats (read/write):
+  nvme0n1: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%

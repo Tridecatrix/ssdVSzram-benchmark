@@ -1,0 +1,164 @@
+job: (g=0): rw=rw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=sync, iodepth=1
+...
+fio-3.16
+Starting 64 processes
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+
+job: (groupid=0, jobs=64): err=28 (file:io_u.c:1787, func=io_u error, error=No space left on device): pid=1115605: Fri Feb 28 02:35:03 2025
+  read: IOPS=429k, BW=1675MiB/s (1757MB/s)(121GiB/73664msec)
+    clat (nsec): min=638, max=139381, avg=2323.28, stdev=413.93
+     lat (nsec): min=663, max=139405, avg=2350.54, stdev=415.43
+    clat percentiles (nsec):
+     |  1.00th=[ 1544],  5.00th=[ 1720], 10.00th=[ 1832], 20.00th=[ 2008],
+     | 30.00th=[ 2160], 40.00th=[ 2256], 50.00th=[ 2352], 60.00th=[ 2416],
+     | 70.00th=[ 2512], 80.00th=[ 2608], 90.00th=[ 2736], 95.00th=[ 2864],
+     | 99.00th=[ 3152], 99.50th=[ 3312], 99.90th=[ 4704], 99.95th=[ 5664],
+     | 99.99th=[ 8896]
+   bw (  MiB/s): min= 1185, max= 1982, per=89.43%, avg=1498.11, stdev=22.19, samples=950
+   iops        : min=303527, max=507445, avg=383512.85, stdev=5680.37, samples=950
+  write: IOPS=429k, BW=1675MiB/s (1756MB/s)(120GiB/73664msec); 0 zone resets
+    clat (usec): min=3, max=263, avg=12.14, stdev= 4.21
+     lat (usec): min=3, max=263, avg=12.19, stdev= 4.21
+    clat percentiles (nsec):
+     |  1.00th=[ 6560],  5.00th=[ 7264], 10.00th=[ 7776], 20.00th=[ 8512],
+     | 30.00th=[ 9408], 40.00th=[10304], 50.00th=[11456], 60.00th=[12736],
+     | 70.00th=[13632], 80.00th=[14784], 90.00th=[17024], 95.00th=[19840],
+     | 99.00th=[27008], 99.50th=[29056], 99.90th=[34048], 99.95th=[36608],
+     | 99.99th=[41728]
+   bw (  MiB/s): min= 1192, max= 1974, per=89.42%, avg=1497.83, stdev=22.14, samples=950
+   iops        : min=305159, max=505493, avg=383442.44, stdev=5668.68, samples=950
+  lat (nsec)   : 750=0.01%, 1000=0.01%
+  lat (usec)   : 2=9.49%, 4=40.42%, 10=18.52%, 20=29.11%, 50=2.45%
+  lat (usec)   : 100=0.01%, 250=0.01%, 500=0.01%
+  cpu          : usr=5.56%, sys=94.40%, ctx=1167, majf=0, minf=1092
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=31591271,31587142,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=1675MiB/s (1757MB/s), 1675MiB/s-1675MiB/s (1757MB/s-1757MB/s), io=121GiB (129GB), run=73664-73664msec
+  WRITE: bw=1675MiB/s (1756MB/s), 1675MiB/s-1675MiB/s (1756MB/s-1756MB/s), io=120GiB (129GB), run=73664-73664msec
+
+Disk stats (read/write):
+  zram0: ios=31574685/31570918, merge=0/0, ticks=34992/326728, in_queue=361720, util=99.85%
