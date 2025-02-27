@@ -1,0 +1,135 @@
+job: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=mmap, iodepth=1
+...
+fio-3.16
+Starting 64 processes
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+
+
+Run status group 0 (all jobs):

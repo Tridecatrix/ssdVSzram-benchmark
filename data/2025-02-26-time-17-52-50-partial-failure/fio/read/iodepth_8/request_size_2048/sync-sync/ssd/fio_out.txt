@@ -1,0 +1,23 @@
+job: (g=0): rw=read, bs=(R) 2048B-2048B, (W) 2048B-2048B, (T) 2048B-2048B, ioengine=sync, iodepth=1
+...
+fio-3.16
+Starting 8 processes
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+job: Laying out IO file (1 file / 32768MiB)
+fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
+
+
+Run status group 0 (all jobs):
