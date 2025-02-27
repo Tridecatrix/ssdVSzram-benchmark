@@ -8,7 +8,7 @@
 # ----------------------------------
 
 # set this to "--parse-only" to run fio with parse-only option (just check that job files parse), else set to blank 
-testrunopt="--parse-only"
+testrunopt=""
 
 # constants
 size="32G"
@@ -125,7 +125,7 @@ for bs in "${block_sizes[@]}"s; do
 
       # clear job files
       echo "clearing job files"
-      if [ ! -z $testrunopt ]; then
+      if [ -z $testrunopt ]; then
         rm $ZRAMdir/job-* 
         rm $SSDdir/job-* 
       fi
