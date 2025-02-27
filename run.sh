@@ -29,6 +29,14 @@ else
   exit
 fi
 
+# assert that directories have correct permissions
+if [ -d "$SSDdir" ] && [ -x "$SSDdir" ] && [ -d "$ZRAMdir" ] && [ -x "$ZRAMdir" ]; then
+  echo "Verified that ZRAM and SSD directories exist and are accessible."
+else
+  echo "Permission issues with accessing ZRAM and SSD; please check."
+  exit
+fi
+
 if [[ $# -gt 1 ]]; then
     # expname is name of experiment, which is appended to the result directory name created in directory data
     echo "Usage: ./run.sh expname"
