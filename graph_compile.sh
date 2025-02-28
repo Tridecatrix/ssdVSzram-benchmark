@@ -1,7 +1,7 @@
 #!/bin/bash
 
-RESULTSDIR=data/2025-02-27-time-20-12-17-ENOSPC-L-bozo/
-OUTPUTDIR=processed-data/test
+RESULTSDIR=data/2025-02-28-time-14-37-09-finale/fio/
+OUTPUTDIR=processed-data/moment
 
 mkdir -p $OUTPUTDIR
 
