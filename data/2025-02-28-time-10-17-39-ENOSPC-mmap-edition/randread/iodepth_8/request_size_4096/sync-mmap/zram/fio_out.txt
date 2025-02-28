@@ -1,0 +1,41 @@
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=mmap, iodepth=1
+...
+fio-3.16
+Starting 8 processes
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+job: Laying out IO file (1 file / 32768MiB)
+fio: ENOSPC on laying out file, stopping
+
+job: (groupid=0, jobs=8): err= 0: pid=1141194: Fri Feb 28 11:05:10 2025
+  read: IOPS=943k, BW=3685MiB/s (3864MB/s)(256GiB/71137msec)
+    clat (nsec): min=1943, max=122612k, avg=7751.59, stdev=109977.66
+     lat (nsec): min=1967, max=122612k, avg=7776.34, stdev=109977.67
+    clat percentiles (nsec):
+     |  1.00th=[ 3440],  5.00th=[ 4512], 10.00th=[ 5216], 20.00th=[ 5600],
+     | 30.00th=[ 5984], 40.00th=[ 6368], 50.00th=[ 7200], 60.00th=[ 7776],
+     | 70.00th=[ 8256], 80.00th=[ 8640], 90.00th=[ 9408], 95.00th=[10176],
+     | 99.00th=[12864], 99.50th=[17024], 99.90th=[49920], 99.95th=[54016],
+     | 99.99th=[62720]
+   bw (  MiB/s): min= 1201, max= 5442, per=100.00%, avg=3825.70, stdev=132.76, samples=1088
+   iops        : min=307642, max=1393247, avg=979377.71, stdev=33985.61, samples=1088
+  lat (usec)   : 2=0.01%, 4=2.98%, 10=91.37%, 20=5.29%, 50=0.26%
+  lat (usec)   : 100=0.10%, 250=0.01%, 500=0.01%, 1000=0.01%
+  lat (msec)   : 10=0.01%, 20=0.01%, 50=0.01%, 100=0.01%, 250=0.01%
+  cpu          : usr=9.78%, sys=90.19%, ctx=2514, majf=67108864, minf=147
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=67108864,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=3685MiB/s (3864MB/s), 3685MiB/s-3685MiB/s (3864MB/s-3864MB/s), io=256GiB (275GB), run=71137-71137msec
+
+Disk stats (read/write):
+  zram0: ios=60928158/83, merge=0/0, ticks=92764/0, in_queue=92764, util=96.57%
