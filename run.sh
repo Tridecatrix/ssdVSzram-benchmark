@@ -59,7 +59,7 @@ mkdir -p $RESULTSDIR
 echo "beginning runs"
 echo ""
 
-for bs in "${block_sizes[@]}"s; do
+for bs in "${block_sizes[@]}"; do
   for nexec in "${nexecs[@]}"; do
     for rw in "${rws[@]}"; do
       echo "running fio with block size $bs, $nexec parallel requests and $rw for read/write setting"
@@ -104,7 +104,7 @@ for bs in "${block_sizes[@]}"s; do
 
 
       # can't run mmap without a block size of 4096 bits
-      if [[ $bs -eq 4096 ]]; then
+      if [[ $bs -ge 4096 ]]; then
         mkdir -p "$SUBDIR/sync-mmap/zram"
         mkdir -p "$SUBDIR/sync-mmap/ssd"
 
