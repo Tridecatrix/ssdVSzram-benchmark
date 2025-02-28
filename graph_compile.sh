@@ -1,14 +1,14 @@
 #!/bin/bash
 
-RESULTSDIR=data/2025-02-27-time-20-12-17-ENOSPC-L-bozo/
-OUTPUTDIR=processed-data/test
+RESULTSDIR=data/2025-02-28-time-14-37-09-finale/fio/
+OUTPUTDIR=processed-data/moment
 
 mkdir -p $OUTPUTDIR
 
-block_sizes=("4096s")
-nexecs=(8 16 32 64)
+block_sizes=(4096)
+nexecs=(32 64)
 rws=(read write rw randread randwrite randrw)
-ioengines=(async sync-sync)
+ioengines=(async sync-sync sync-mmap)
 plots=(
     avg_qu_sz
     avg_rq_sz
