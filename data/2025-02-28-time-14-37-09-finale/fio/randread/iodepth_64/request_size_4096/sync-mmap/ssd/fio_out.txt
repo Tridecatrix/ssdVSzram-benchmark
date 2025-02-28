@@ -1,0 +1,31 @@
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=mmap, iodepth=1
+...
+fio-3.16
+Starting 64 processes
+
+job: (groupid=0, jobs=64): err= 0: pid=1222576: Fri Feb 28 15:18:21 2025
+  read: IOPS=523k, BW=2044MiB/s (2143MB/s)(32.0GiB/16033msec)
+    clat (usec): min=43, max=15431, avg=120.29, stdev=44.60
+     lat (usec): min=44, max=15432, avg=120.46, stdev=44.60
+    clat percentiles (usec):
+     |  1.00th=[   79],  5.00th=[   83], 10.00th=[   85], 20.00th=[   89],
+     | 30.00th=[   95], 40.00th=[  100], 50.00th=[  105], 60.00th=[  115],
+     | 70.00th=[  129], 80.00th=[  147], 90.00th=[  176], 95.00th=[  204],
+     | 99.00th=[  269], 99.50th=[  297], 99.90th=[  363], 99.95th=[  392],
+     | 99.99th=[  453]
+   bw (  MiB/s): min= 2023, max= 2075, per=100.00%, avg=2050.21, stdev= 0.19, samples=1984
+   iops        : min=517955, max=531220, avg=524850.10, stdev=49.45, samples=1984
+  lat (usec)   : 50=0.01%, 100=40.38%, 250=57.98%, 500=1.64%, 750=0.01%
+  lat (msec)   : 2=0.01%, 4=0.01%, 10=0.01%, 20=0.01%
+  cpu          : usr=3.85%, sys=15.11%, ctx=8389628, majf=8388608, minf=1595
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=8388608,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=1
+
+Run status group 0 (all jobs):
+   READ: bw=2044MiB/s (2143MB/s), 2044MiB/s-2044MiB/s (2143MB/s-2143MB/s), io=32.0GiB (34.4GB), run=16033-16033msec
+
+Disk stats (read/write):
+  nvme0n1: ios=0/0, merge=0/0, ticks=0/0, in_queue=0, util=0.00%

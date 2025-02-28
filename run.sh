@@ -137,9 +137,4 @@ for bs in "${block_sizes[@]}"; do
   done
 done
 
-
-./system_util/stop_statistics.sh -d $RESULTSDIR/system-util
-echo "statistics ended"
-
-./system_util/extract-data.sh -r $RESULTSDIR/system-util -d zram0 -d nvme0n1
-echo "data extracted"
+echo "all runs done"
