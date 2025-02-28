@@ -10,3 +10,28 @@ done
 
 running fio with block size 4096, 8 parallel requests and write for read/write setting
 running sync w/ mmap on zram
+fio: pid=1136834, got signal=7
+fio: file hash not empty on exit
+running sync w/ mmap on ssd
+clearing job files
+done
+
+running fio with block size 4096, 8 parallel requests and rw for read/write setting
+running sync w/ mmap on zram
+fio: pid=1139067, got signal=7
+fio: file hash not empty on exit
+running sync w/ mmap on ssd
+clearing job files
+done
+
+running fio with block size 4096, 8 parallel requests and randread for read/write setting
+running sync w/ mmap on zram
+running sync w/ mmap on ssd
+clearing job files
+done
+
+running fio with block size 4096, 8 parallel requests and randwrite for read/write setting
+running sync w/ mmap on zram
+fio: pid=1143362, got signal=7
+fio: file hash not empty on exit
+running sync w/ mmap on ssd
