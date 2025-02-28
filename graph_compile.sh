@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RESULTSDIR=data/2025-02-28-time-14-37-09-finale/fio/
-OUTPUTDIR=processed-data/moment
+OUTPUTDIR=processed-data/2025-02-28-first-run/graphs
 
 mkdir -p $OUTPUTDIR
 
