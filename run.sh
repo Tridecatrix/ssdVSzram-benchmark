@@ -1,19 +1,22 @@
 #!/bin/bash
 
-# run this script with this command: 
+# run this script with this command AFTER SETTING NECESSARY PARAMETERS BELOW: 
 # nohup ./run.sh > data/log.txt & 2>&1
 
 # ----------------------------------
 # setup
 # ----------------------------------
 
-# set this to "--parse-only" to run fio with parse-only option (just check that job files parse), else set to blank 
+# set these before running
+# - testrunopt can be set to --parse-only to disable fio from actually running
+# - outputFormat is json by default
 testrunopt=""
+outputFormat="json"
 
 # constants
 totalSize=$((32 * 1024 * 1024 * 1024))
 SSDdir="/mnt/ssd/adnan/bench"
-ZRAMdir="/home/users/u7300623/SSDvsZRAM-fio/zram"
+ZRAMdir="/home/users/u7300623/SSDvsZRAM-fio/zrammount"
 
 # options for other fio variables
 block_sizes=(4096)
@@ -75,14 +78,14 @@ for bs in "${block_sizes[@]}"; do
       echo "running async on zram"
 
       ./system_util/start_statistics.sh -d $SUBDIR/async/zram
-      SIZE="$totalSize" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/zram/fio_out.txt" $testrunopt
+      SIZE="$totalSize" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
       ./system_util/stop_statistics.sh -d $SUBDIR/async/zram
       ./system_util/extract-data.sh -r $SUBDIR/async/zram -d zram0 -d nvme0n1
 
       echo "running sync w/ syscall on zram"
 
       ./system_util/start_statistics.sh -d $SUBDIR/sync-sync/zram
-      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/zram/fio_out.txt" $testrunopt
+      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
       ./system_util/stop_statistics.sh -d $SUBDIR/sync-sync/zram
       ./system_util/extract-data.sh -r $SUBDIR/sync-sync/zram -d zram0 -d nvme0n1
 
@@ -91,14 +94,14 @@ for bs in "${block_sizes[@]}"; do
       echo "running async on ssd"
 
       ./system_util/start_statistics.sh -d $SUBDIR/async/ssd
-      SIZE="$totalSize" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/ssd/fio_out.txt" $testrunopt
+      SIZE="$totalSize" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
       ./system_util/stop_statistics.sh -d $SUBDIR/async/ssd
       ./system_util/extract-data.sh -r $SUBDIR/async/ssd -d zram0 -d nvme0n1
 
       echo "running sync w/ syscall on ssd"
 
       ./system_util/start_statistics.sh -d $SUBDIR/sync-sync/ssd
-      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/ssd/fio_out.txt" $testrunopt
+      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
       ./system_util/stop_statistics.sh -d $SUBDIR/sync-sync/ssd
       ./system_util/extract-data.sh -r $SUBDIR/sync-sync/ssd -d zram0 -d nvme0n1
 
@@ -111,14 +114,14 @@ for bs in "${block_sizes[@]}"; do
         echo "running sync w/ mmap on zram"
 
         ./system_util/start_statistics.sh -d $SUBDIR/sync-mmap/zram
-        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/zram/fio_out.txt" $testrunopt
+        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBDIR/sync-mmap/zram
         ./system_util/extract-data.sh -r $SUBDIR/sync-mmap/zram -d zram0 -d nvme0n1
 
         echo "running sync w/ mmap on ssd"
 
         ./system_util/start_statistics.sh -d $SUBDIR/sync-mmap/ssd
-        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/ssd/fio_out.txt" $testrunopt
+        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBDIR/sync-mmap/ssd
         ./system_util/extract-data.sh -r $SUBDIR/sync-mmap/ssd -d zram0 -d nvme0n1
       fi
