@@ -5,10 +5,10 @@ OUTPUTDIR=processed-data/test
 
 mkdir -p $OUTPUTDIR
 
-block_sizes=("4096s")
-nexecs=(8 16 32 64)
+block_sizes=(4096)
+nexecs=(32 64)
 rws=(read write rw randread randwrite randrw)
-ioengines=(async sync-sync)
+ioengines=(async sync-sync sync-mmap)
 plots=(
     avg_qu_sz
     avg_rq_sz
