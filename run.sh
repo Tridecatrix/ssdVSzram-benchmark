@@ -1,16 +1,21 @@
 #!/bin/bash
 
-# run this script with this command AFTER SETTING NECESSARY PARAMETERS BELOW: 
-# nohup ./run.sh > data/log.txt & 2>&1
+# run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
+#
+# run while logging the output and error to file:
+# nohup ./run.sh > data/log.txt 2>&1 &
+#
+# run while logging the output and error to file both locally and to remote ssh
+# nohup ./run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
 
 # ----------------------------------
-# setup
+# parameters
 # ----------------------------------
 
 # set these before running
 # - testrunopt can be set to --parse-only to disable fio from actually running
 # - outputFormat is json by default
-testrunopt=""
+testrunopt="--parse-only"
 outputFormat="json"
 
 # constants
@@ -20,9 +25,29 @@ ZRAMdir="/home/users/u7300623/SSDvsZRAM-fio/zrammount"
 
 # options for other fio variables
 block_sizes=(4096)
-nexecs=(32 64)
+nprocs=(1 32 64)
+iodepths=(64 128)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
+async_ioengines=("libaio" "io_uring")
+
+# ---------------------------------
+# setup and pre-run checks
+# ---------------------------------
+
+# assert that nobody else is on the machine
+# - note: based on how you're running the script, you may count as one of the users outputted as who;
+#   in this case update below comparison to "$(($nusers-1)) -gt 0"
+nusers=`who | wc -l`
+if [[ $nusers -gt 0 ]]; then
+  echo "Detected $nusers other users on the machine; aborting"
+  exit
+fi
+
+# TODO: add check that no other processes are running
+# - maybe filter output of top for processes with above 50% utilisation
+# - ps u $(pgrep -v -u root) is a start but picks up the shell process that the user is running this script from,
+# as well as a bunch of other random system processes
 
 # assert that ZRAM is mounted
 if grep -qs "/dev/zram0 ${ZRAMdir} " /proc/mounts; then
@@ -62,6 +87,27 @@ if [ -z $testrunopt ]; then
 fi
 
 # ----------------------------------
+# print run config and zram config
+# ----------------------------------
+
+echo ""
+echo "Parameters for this run:"
+touch $RESULTSDIR/fio-config.txt
+echo "Total file size during runs: $totalSize" | tee -a $RESULTSDIR/fio-config.txt
+echo "Block sizes: ${block_sizes[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Numbers of processes: ${nprocs[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Read/write type options: ${rws[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Async I/O engines: ${async_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
+
+# check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
+echo ""
+echo "Zram config:"
+zramctl | tee $RESULTSDIR/zram-config.txt
+echo ""
+
+# ----------------------------------
 # running things
 # ----------------------------------
 
@@ -69,77 +115,60 @@ echo "beginning runs"
 echo ""
 
 for bs in "${block_sizes[@]}"; do
-  for nexec in "${nexecs[@]}"; do
+  for nproc in "${nprocs[@]}"; do
     for rw in "${rws[@]}"; do
-      echo "running fio with block size $bs, $nexec parallel requests and $rw for read/write setting"
+      echo "running fio with block size $bs, $nproc processes and $rw for read/write setting"
 
-      SUBDIR="$RESULTSDIR/fio/$rw/iodepth_$nexec/request_size_$bs"
-      mkdir -p "$SUBDIR/async/zram"
-      mkdir -p "$SUBDIR/sync-sync/zram"
-      mkdir -p "$SUBDIR/async/ssd"
-      mkdir -p "$SUBDIR/sync-sync/ssd"
+      SUBDIR="$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs"
 
-      # run zram configs
+      # run async configs
+      for ioengine in "${async_ioengines[@]}"; do
+        for iodepth in "${iodepths[@]}"; do
+          echo "running async (engine $ioengine, iodepth $iodepth) on zram"
+          SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/zram"
+          mkdir -p $SUBSUBDIR
 
-      echo "running async on zram"
+          ./system_util/start_statistics.sh -d $SUBSUBDIR
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio config/async.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          ./system_util/stop_statistics.sh -d $SUBSUBDIR
+          ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
-      ./system_util/start_statistics.sh -d $SUBDIR/async/zram
-      SIZE="$totalSize" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
-      ./system_util/stop_statistics.sh -d $SUBDIR/async/zram
-      ./system_util/extract-data.sh -r $SUBDIR/async/zram -d zram0 -d nvme0n1
+          echo "running async (engine $ioengine, iodepth $iodepth) on ssd"
+          SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/ssd"
+          mkdir -p $SUBSUBDIR
 
-      echo "running sync w/ syscall on zram"
+          ./system_util/start_statistics.sh -d $SUBSUBDIR
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio config/async.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          ./system_util/stop_statistics.sh -d $SUBSUBDIR
+          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
 
-      ./system_util/start_statistics.sh -d $SUBDIR/sync-sync/zram
-      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
-      ./system_util/stop_statistics.sh -d $SUBDIR/sync-sync/zram
-      ./system_util/extract-data.sh -r $SUBDIR/sync-sync/zram -d zram0 -d nvme0n1
+          ./clear_job_files.sh $ZRAMdir $SSDdir
+        done
+      done
 
-      # run ssd configs
+      # run sync configs
+      for ioengine in "${sync_ioengines[@]}"; do
+        echo "running sync (engine $ioengine) on zram"
+        SUBSUBDIR="$SUBDIR/sync-$ioengine/zram"
+        mkdir -p $SUBSUBDIR
 
-      echo "running async on ssd"
+        ./system_util/start_statistics.sh -d $SUBSUBDIR
+        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+        ./system_util/stop_statistics.sh -d $SUBSUBDIR
+        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
-      ./system_util/start_statistics.sh -d $SUBDIR/async/ssd
-      SIZE="$totalSize" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" fio config/timed-async.fio --output="$SUBDIR/async/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
-      ./system_util/stop_statistics.sh -d $SUBDIR/async/ssd
-      ./system_util/extract-data.sh -r $SUBDIR/async/ssd -d zram0 -d nvme0n1
+        echo "running sync (engine $ioengine) on ssd"
+        SUBSUBDIR="$SUBDIR/sync-$ioengine/ssd"
+        mkdir -p $SUBSUBDIR
 
-      echo "running sync w/ syscall on ssd"
+        ./system_util/start_statistics.sh -d $SUBSUBDIR
+        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+        ./system_util/stop_statistics.sh -d $SUBSUBDIR
+        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
-      ./system_util/start_statistics.sh -d $SUBDIR/sync-sync/ssd
-      SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="sync" fio config/timed-sync.fio --output="$SUBDIR/sync-sync/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
-      ./system_util/stop_statistics.sh -d $SUBDIR/sync-sync/ssd
-      ./system_util/extract-data.sh -r $SUBDIR/sync-sync/ssd -d zram0 -d nvme0n1
+        ./clear_job_files.sh $ZRAMdir $SSDdir
+      done
 
-
-      # can't run mmap without a block size of 4096 bits
-      if [[ $bs -ge 4096 ]]; then
-        mkdir -p "$SUBDIR/sync-mmap/zram"
-        mkdir -p "$SUBDIR/sync-mmap/ssd"
-
-        echo "running sync w/ mmap on zram"
-
-        ./system_util/start_statistics.sh -d $SUBDIR/sync-mmap/zram
-        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$ZRAMdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/zram/fio_out.txt" --output-format=$outputFormat $testrunopt
-        ./system_util/stop_statistics.sh -d $SUBDIR/sync-mmap/zram
-        ./system_util/extract-data.sh -r $SUBDIR/sync-mmap/zram -d zram0 -d nvme0n1
-
-        echo "running sync w/ mmap on ssd"
-
-        ./system_util/start_statistics.sh -d $SUBDIR/sync-mmap/ssd
-        SIZE_PER_PROC="$(($totalSize / $nexec))" BS="$bs" DIR="$SSDdir" N_PAR_REQUESTS="$nexec" RW="$rw" IOENGINE="mmap" fio config/timed-sync.fio --output="$SUBDIR/sync-mmap/ssd/fio_out.txt" --output-format=$outputFormat $testrunopt
-        ./system_util/stop_statistics.sh -d $SUBDIR/sync-mmap/ssd
-        ./system_util/extract-data.sh -r $SUBDIR/sync-mmap/ssd -d zram0 -d nvme0n1
-      fi
-
-      # clear job files
-      echo "clearing job files"
-      if [ -z $testrunopt ]; then
-        rm $ZRAMdir/job-* 
-        rm $SSDdir/job-* 
-      fi
-
-      echo "done"
       echo ""
 
     done
