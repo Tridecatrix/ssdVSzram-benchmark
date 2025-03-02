@@ -1,0 +1,13 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=${BS}
+ioengine=io_uring
+numjobs=${NPROC}
+group_reporting
+iodepth=${IODEPTH}
+size=${SIZE_PER_PROC}
+allow_file_create=1
+directory=${DIR}
+rw=${RW}
+runtime=120
