@@ -15,7 +15,7 @@
 # set these before running
 # - testrunopt can be set to --parse-only to disable fio from actually running
 # - outputFormat is json by default
-testrunopt="--parse-only"
+testrunopt=""
 outputFormat="json"
 
 # constants
