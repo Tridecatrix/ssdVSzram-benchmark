@@ -5,7 +5,8 @@ bs=${BS}
 ioengine=${IOENGINE}
 numjobs=${N_PAR_REQUESTS}
 group_reporting
-size=${SIZE}/${N_PAR_REQUESTS}
+size=${SIZE_PER_PROC}
 allow_file_create=1
 directory=${DIR}
 rw=${RW}
+runtime=120
