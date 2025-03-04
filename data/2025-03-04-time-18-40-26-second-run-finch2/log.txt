@@ -1,0 +1,383 @@
+nohup: ignoring input
+Verified the ZRAM and SSD directories exist
+Verified that ZRAM and SSD directories exist and are accessible.
+Verified that ZRAM is mounted.
+rm: cannot remove '/home/users/u7300623/ssdVSzram-benchmark/zrammount/job-*': No such file or directory
+rm: cannot remove '/mnt/ssd/adnan/bench/job-*': No such file or directory
+
+Parameters for this run:
+Total file size during runs: 34359738368
+Block sizes: 4096
+Numbers of processes: 1 32 64
+Read/write type options: read write rw randread randwrite randrw
+Async I/O engines: libaio io_uring
+Async I/O depths: 64 128
+Sync I/O engines: sync mmap
+
+Zram config:
+NAME       ALGORITHM DISKSIZE  DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 lzo           250G 38.8M 32.7M 32.9M     112 /home/users/u7300623/ssdVSzram-benchmark/zrammount
+
+beginning runs
+
+running fio with block size 4096, 1 processes and read for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 1 processes and write for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 1 processes and rw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 1 processes and randread for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 1 processes and randwrite for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 1 processes and randrw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and read for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and write for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and rw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and randread for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and randwrite for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 32 processes and randrw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and read for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and write for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and rw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and randread for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and randwrite for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes and randrw for read/write setting
+running async (engine libaio, iodepth 64) on zram
+running async (engine libaio, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine libaio, iodepth 128) on zram
+running async (engine libaio, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 64) on zram
+running async (engine io_uring, iodepth 64) on ssd
+clearing job files on ZRAM and SSD
+running async (engine io_uring, iodepth 128) on zram
+running async (engine io_uring, iodepth 128) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine sync) on zram
+running sync (engine sync) on ssd
+clearing job files on ZRAM and SSD
+running sync (engine mmap) on zram
+running sync (engine mmap) on ssd
+clearing job files on ZRAM and SSD
+
+all runs done

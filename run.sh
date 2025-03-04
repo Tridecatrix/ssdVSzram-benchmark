@@ -21,7 +21,7 @@ outputFormat="json"
 # constants
 totalSize=$((32 * 1024 * 1024 * 1024))
 SSDdir="/mnt/ssd/adnan/bench"
-ZRAMdir="/home/users/u7300623/SSDvsZRAM-fio/zrammount"
+ZRAMdir="/home/users/u7300623/ssdVSzram-benchmark/zrammount"
 
 # options for other fio variables
 block_sizes=(4096)
@@ -49,19 +49,26 @@ fi
 # - ps u $(pgrep -v -u root) is a start but picks up the shell process that the user is running this script from,
 # as well as a bunch of other random system processes
 
+# assert that directories exist
+if [ -d "$SSDdir" ] && [ -d "$ZRAMdir" ]; then
+  echo "Verified the ZRAM and SSD directories exist"
+else
+  echo "one of ZRAM or SSD directories doesn't exist"
+  exit
+fi
+
+if [ -x "$SSDdir" ] && [ -x "$ZRAMdir" ]; then
+  echo "Verified that ZRAM and SSD directories exist and are accessible."
+else
+  echo "Permission issues with accessing ZRAM and SSD; please check."
+  exit
+fi
+
 # assert that ZRAM is mounted
 if grep -qs "/dev/zram0 ${ZRAMdir} " /proc/mounts; then
   echo "Verified that ZRAM is mounted."
 else
   echo "ZRAM is not mounted on the specified directory; please fix."
-  exit
-fi
-
-# assert that directories have correct permissions
-if [ -d "$SSDdir" ] && [ -x "$SSDdir" ] && [ -d "$ZRAMdir" ] && [ -x "$ZRAMdir" ]; then
-  echo "Verified that ZRAM and SSD directories exist and are accessible."
-else
-  echo "Permission issues with accessing ZRAM and SSD; please check."
   exit
 fi
 
