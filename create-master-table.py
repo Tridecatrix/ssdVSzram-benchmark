@@ -1,6 +1,19 @@
 #!/bin/python3
 
-# Main result collection script. Given a directory of results
+# Create master table from JSON fio outputs, including both config param columns and metric columns.
+
+# Main result collection script. Given a directory of results with some internal directory structure
+# (all that matters is that each fio output is in a seperate directory within the resultsDir and are all
+# called fio_out.txt, and the fio output is in JSON mode), make a master CSV table with columns 
+
+# Note: it is also possible to probably do a one liner in bash that join together the terse output across
+# CSV files since each one is meant to be CSV row. The initial reason I did not do this was a bad reason
+# (I could not find the header line for the CSV format even though it was directly on the fio page), but
+# after already writing this script I discovered there were in fact two good reasons:
+# - Retaining human readability of the output for quick checking
+# - (Frustratingly) the terse output does not include any config parameters/job option descriptions, while
+#   the json output does
+
 
 import matplotlib.pyplot as plt
 import pandas as pd
