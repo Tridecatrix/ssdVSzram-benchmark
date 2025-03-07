@@ -1,0 +1,13 @@
+,crw,cdevice,readBW,writeBW,avgreadlat,avgwritelat
+0,randread,ssd,5.9 GB,0.0 B,5.0 ms,0.0 ns
+1,randread,zram,14.6 GB,0.0 B,1.9 ms,0.0 ns
+2,randrw,ssd,1.6 GB,1.6 GB,9.7 ms,10.1 ms
+3,randrw,zram,1.8 GB,1.8 GB,9.3 ms,7.0 ms
+4,randwrite,ssd,0.0 B,2.2 GB,0.0 ns,13.7 ms
+5,randwrite,zram,0.0 B,1.9 GB,0.0 ns,15.6 ms
+6,read,ssd,5.5 GB,0.0 B,5.3 ms,0.0 ns
+7,read,zram,13.6 GB,0.0 B,1.9 ms,0.0 ns
+8,rw,ssd,1.6 GB,1.6 GB,9.4 ms,9.5 ms
+9,rw,zram,1.9 GB,1.9 GB,9.3 ms,6.4 ms
+10,write,ssd,0.0 B,2.2 GB,0.0 ns,13.5 ms
+11,write,zram,0.0 B,2.1 GB,0.0 ns,14.6 ms

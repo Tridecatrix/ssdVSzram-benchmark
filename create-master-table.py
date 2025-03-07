@@ -78,10 +78,10 @@ params = {
     "device": "special"
 }
 metrics = {
-    "readBW": "read:bw",
-    "writeBW": "write:bw",
-    "avgreadlat": "read:lat_ns:mean",
-    "avgwritelat": "write:lat_ns:mean"
+    "readBW_bytes": "read:bw_bytes",
+    "writeBW_bytes": "write:bw_bytes",
+    "avgreadlat_ns": "read:lat_ns:mean",
+    "avgwritelat_ns": "write:lat_ns:mean"
 } # TODO: add more metrics
 
 paramDefaults = {
