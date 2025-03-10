@@ -1,4 +1,4 @@
-# run this script with sudo, or copypaste commands from here
+# run this script with sudo, or copypaste commands from here. run from repo root directory.
 
 # install git submodules
 git submodule init

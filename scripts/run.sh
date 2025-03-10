@@ -22,6 +22,8 @@ outputFormat="json"
 totalSize=$((32 * 1024 * 1024 * 1024))
 SSDdir="/mnt/ssd/adnan/bench"
 ZRAMdir="/home/users/u7300623/ssdVSzram-benchmark/zrammount"
+HOMEdir="/home/users/u7300623/ssdVSzram-benchmark" # change to root directory of this repo
+# note: to change which folder results are stored in, change RESULTSDIR further below
 
 # options for other fio variables
 block_sizes=(4096)
@@ -34,6 +36,8 @@ async_ioengines=("libaio" "io_uring")
 # ---------------------------------
 # setup and pre-run checks
 # ---------------------------------
+
+cd $HOMEdir
 
 # assert that nobody else is on the machine
 # - note: based on how you're running the script, you may count as one of the users outputted as who;
@@ -149,7 +153,7 @@ for bs in "${block_sizes[@]}"; do
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
           ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
 
-          ./clear_job_files.sh $ZRAMdir $SSDdir
+          ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
         done
       done
 
@@ -173,7 +177,7 @@ for bs in "${block_sizes[@]}"; do
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
         ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
-        ./clear_job_files.sh $ZRAMdir $SSDdir
+        ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
       done
 
       echo ""
