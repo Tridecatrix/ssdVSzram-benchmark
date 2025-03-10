@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# nohup ./run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
+# nohup ./scripts/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
 
 # ----------------------------------
 # parameters
