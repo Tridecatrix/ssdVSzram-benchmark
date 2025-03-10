@@ -38,6 +38,20 @@ def format_time(time_in_ns):
     # Format the result
     return f"{time_in_ns:.1f} {units[i]}"
 
+def create_simpl_columns(table):
+    # applies units and formats strings
+    formatfuncs = {
+        "readBW_bytes": format_size,
+        "writeBW_bytes": format_size,
+        "avgreadlat_ns": format_time,
+        "avgwritelat_ns": format_time
+    }
+    
+    for cname, cfunc in formatfuncs.items():
+        table[cname.split('_')[0]] = table[cname].apply(cfunc)
+
+    return table
+
 # ------------------------------
 # Graphical
 # ------------------------------
