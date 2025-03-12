@@ -23,10 +23,9 @@ totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 SSDdir="/mnt/ssd/adnan/bench"
 ZRAMdir="$HOMEdir/zrammount"
-# note: to change which folder results are stored in, change RESULTSDIR further below
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-10-third-run-memlim/async.fio"
+sync_config="$HOMEdir/config/2025-03-10-third-run-memlim/sync.fio"
 async_config="$HOMEdir/config/2025-03-10-third-run-memlim/async.fio"
 
 # options for other fio variables
@@ -34,8 +33,13 @@ block_sizes=(4096)
 nprocs=(64)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("mmap")
-memlim=("256M" "512M" "1G" "2G" "4G" "8G" "16G" "32G" "64G")
+memlims=("256M" "512M" "1G" "2G" "4G" "8G" "16G" "32G" "64G")
 directopts=(0 1)
+
+EXPNAME=third-run-limmem
+
+RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
+mkdir -p $RESULTSDIR
 
 # ---------------------------------
 # setup and pre-run checks
@@ -80,21 +84,6 @@ else
   exit
 fi
 
-if [[ $# -gt 1 ]]; then
-    # expname is name of experiment, which is appended to the result directory name created in directory data
-    echo "Usage: ./run.sh expname"
-fi
-
-if [[ -z $1 ]]; then
-    EXPNAME=unnamed
-else
-    EXPNAME=$1
-fi
-
-RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
-
-mkdir -p $RESULTSDIR
-
 # clear any existing job files in the directories
 if [ -z $testrunopt ]; then
   rm $ZRAMdir/job-* 
@@ -133,7 +122,7 @@ for bs in "${block_sizes[@]}"; do
   for nproc in "${nprocs[@]}"; do
     for rw in "${rws[@]}"; do
       for memlim in "${memlims[@]}"; do
-        for directopt in ${directopts[@]}; do
+        for directopt in "${directopts[@]}"; do
 
           echo "running fio with block size $bs, $nproc processes, $rw for read/write setting, $memlim memory allocation and DIRECT=$directopt"
 
@@ -146,7 +135,7 @@ for bs in "${block_sizes[@]}"; do
             mkdir -p $SUBSUBDIR
 
             ./system_util/start_statistics.sh -d $SUBSUBDIR
-            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" CGROUP="memlim.$memlim" DIRECT="$directopt" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" CGROUP="memlim/$memlim" DIRECT="$directopt" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
             ./system_util/stop_statistics.sh -d $SUBSUBDIR
             ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
@@ -155,7 +144,7 @@ for bs in "${block_sizes[@]}"; do
             mkdir -p $SUBSUBDIR
 
             ./system_util/start_statistics.sh -d $SUBSUBDIR
-            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" CGROUP="memlim.$memlim" DIRECT="$directopt" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" CGROUP="memlim/$memlim" DIRECT="$directopt" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
             ./system_util/stop_statistics.sh -d $SUBSUBDIR
             ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0c0n1
 

@@ -6,7 +6,7 @@
 # note: requires SUDO permissions to run
 
 MEMORY_LIMIT_ARG=$2
-CGROUP_NAME="$1.$MEMORY_LIMIT_ARG"
+CGROUP_NAME=$1
 USERNAME=$3
 
 # check for the right argument number
@@ -31,6 +31,6 @@ fi
 sudo cgcreate -a $USERNAME -t $USERNAME -g memory:/${CGROUP_NAME}
 
 # Set the memory limit for the cgroup
-sudo cgset -r memory.limit_in_bytes=${MEMORY_LIMIT} ${CGROUP_NAME}
+cgset -r memory.max=${MEMORY_LIMIT} ${CGROUP_NAME}
 
 echo "cgroup $CGROUP_NAME created"

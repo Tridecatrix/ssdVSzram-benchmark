@@ -37,6 +37,11 @@ rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=()
 
+EXPNAME=third-run-process-scaling
+
+RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
+mkdir -p $RESULTSDIR
+
 # ---------------------------------
 # setup and pre-run checks
 # ---------------------------------
@@ -79,21 +84,6 @@ else
   echo "ZRAM is not mounted on the specified directory; please fix."
   exit
 fi
-
-if [[ $# -gt 1 ]]; then
-    # expname is name of experiment, which is appended to the result directory name created in directory data
-    echo "Usage: ./run.sh expname"
-fi
-
-if [[ -z $1 ]]; then
-    EXPNAME=unnamed
-else
-    EXPNAME=$1
-fi
-
-RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
-
-mkdir -p $RESULTSDIR
 
 # clear any existing job files in the directories
 if [ -z $testrunopt ]; then
