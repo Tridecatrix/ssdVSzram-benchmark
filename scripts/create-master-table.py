@@ -166,7 +166,7 @@ for cname, cjson in allDataJson.items():
         
     # also add columns for the CPU util/system metrics
     for systemMetric in systemCSVs[cname].index:
-        mRow[systemMetric] = systemCSVs[cname]["values"][systemMetric]
+        mRow[systemMetric[:-3] + "_perc"] = systemCSVs[cname]["values"][systemMetric]
 
     mTable.append(mRow)
 

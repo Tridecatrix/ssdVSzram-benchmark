@@ -1,4 +1,4 @@
-,cbSize,cioengine,ciodepth,crw,cnproc,cdevice,cdirect,cmemlim,cmemlim_bytes,readBW_bytes,readBW,writeBW_bytes,writeBW,avgreadlat_ns,avgreadlat,avgwritelat_ns,avgwritelat,USR_UTIL(%),SYS_UTIL(%),IOW_UTIL(%),IDL_UTIL(%),CPU_UTIL(%)
+,cbSize,cioengine,ciodepth,crw,cnproc,cdevice,cdirect,cmemlim,cmemlim_bytes,readBW_bytes,readBW,writeBW_bytes,writeBW,avgreadlat_ns,avgreadlat,avgwritelat_ns,avgwritelat,USR_UTIL_perc,SYS_UTIL_perc,IOW_UTIL_perc,IDL_UTIL_perc,CPU_UTIL_perc
 0,4096,mmap,1,randread,64,ssd,0,16G,17179869184,2513330288,2.3 GB,0,0.0 B,92741.768303,92.7 µs,0.0,0.0 ns,1.41615,9.04077,37.3946,52.1415,47.8585
 1,4096,mmap,1,randread,64,zram,0,16G,17179869184,9985393306,9.3 GB,0,0.0 B,12100.433908,12.1 µs,0.0,0.0 ns,3.15,39.455,0.0,57.395,42.605
 2,4096,mmap,1,randread,64,ssd,1,16G,17179869184,2507095101,2.3 GB,0,0.0 B,93228.454742,93.2 µs,0.0,0.0 ns,1.45,9.29538,37.4415,51.81,48.19
