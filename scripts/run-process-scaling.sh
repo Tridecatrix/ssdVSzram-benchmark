@@ -145,7 +145,7 @@ for bs in "${block_sizes[@]}"; do
           ./system_util/start_statistics.sh -d $SUBSUBDIR
           SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
-          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
+          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0c0n1
 
           ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
         done
@@ -169,7 +169,7 @@ for bs in "${block_sizes[@]}"; do
         ./system_util/start_statistics.sh -d $SUBSUBDIR
         SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
-        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
+        ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0c0n1
 
         ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
       done

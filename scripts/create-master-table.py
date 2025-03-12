@@ -20,7 +20,11 @@ import pandas as pd
 import numpy as np
 import json
 import os
+import sys
 import argparse
+
+# import analysis/analysislib.py
+import analysislib as alib 
 
 # ------------------------------------
 # preamble
@@ -46,6 +50,7 @@ outputDir = args.outputDir if args.outputDir != None else resultsDir
 configNames = [] # list of all config names (generated from names of subdirectories in resultsDir) 
 configPaths = {} # dictionary mapping cnames in configNames to paths to their result files
 allDataJson = {} # dictionary mapping cnames in configNames to the JSON dictionary loaded from that config's results
+systemCSVs = {} # dictionary mapping cnames in configNames to a PD dataframe corresponding to its system data (measured by iostat)
 
 for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
     if "fio_out.txt" in subfiles:
@@ -58,8 +63,16 @@ for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
             with open(f"{cpath}/fio_out.txt") as datafile:
                 allDataJson[cname] = json.load(datafile)
         except json.decoder.JSONDecodeError:
-            print("ERROR: config " + cname + " has malformed JSON; skipping")
+            print("ERROR: config " + cname + " has malformed fio_out.txt JSON; skipping")
             configNames.remove(cname)
+            continue
+        
+        try:
+            systemCSVs[cname] = pd.read_csv(f"{cpath}/system.csv", header=None, names=["metrics", "values"], index_col=0)
+        except:
+            print("ERROR: config " + cname + " has malformed system.csv")
+            print("note: couldn't be bothered coding something graceful for this case so im gonna crash out lol")
+            raise
 
 
 # master table will have columns for params as well as columns for metrics
@@ -75,7 +88,9 @@ params = {
     "iodepth": "job options:iodepth", # note: this will be overrided for sync ioengines to 1
     "rw": "job options:rw",
     "nproc": "job options:numjobs",
-    "device": "special"
+    "device": "special",
+    "direct": "job options:direct",
+    "memlim": "special"
 }
 metrics = {
     "readBW_bytes": "read:bw_bytes",
@@ -88,7 +103,17 @@ paramDefaults = {
     "bSize": 4096,
     "iodepth": 1,
     "rw": "read",
-    "nproc": 1
+    "nproc": 1,
+    "direct": 0
+}
+
+# for the metrics, also create "human readable" columns that convert the number to appropriate units
+formatfuncs = {
+    "readBW_bytes": ("readBW", alib.format_size),
+    "writeBW_bytes": ("writeBW", alib.format_size),
+    "avgreadlat_ns": ("avgreadlat", alib.format_time),
+    "avgwritelat_ns": ("avgwritelat", alib.format_time),
+    "cmemlim": ("cmemlim_bytes", alib.unformat_size_memlim)
 }
 
 columns = {**{"c" + pname: ppath for pname, ppath in params.items()}, **metrics}
@@ -105,12 +130,20 @@ for cname, cjson in allDataJson.items():
         value = cjson
 
         if colpath == "special":
+
             if colname == "cdevice":
                 directory = cjson["job options"]["directory"]
                 if "zram" in directory:
                     value = "zram"
                 elif "ssd" in directory:
                     value = "ssd"
+            
+            if colname == "cmemlim":
+                if "cgroup" in cjson["job options"] and "memlim" in cjson["job options"]["cgroup"]:
+                    value = cjson["job options"]["cgroup"].split("/")[1]
+                else:
+                    value = "none"
+
         else:
             for key in colpath.split(':'):
                 try:
@@ -119,7 +152,22 @@ for cname, cjson in allDataJson.items():
                     value = paramDefaults[key]
                 
         mRow[colname] = value
+
+        # for columns that are in formatfuncs, also call the format function and add an extra column
+        # with the value (this is to allow having the bytes and ns outputs in most appropriate units
+        # for human readability)
+        if colname in formatfuncs:
+            if mRow[colname] == "none":
+                continue
+
+            newcolname = formatfuncs[colname][0]
+            cfunc = formatfuncs[colname][1]
+            mRow[newcolname] = cfunc(mRow[colname])
         
+    # also add columns for the CPU util/system metrics
+    for systemMetric in systemCSVs[cname].index:
+        mRow[systemMetric] = systemCSVs[cname]["values"][systemMetric]
+
     mTable.append(mRow)
 
 # finally, output table to CSV

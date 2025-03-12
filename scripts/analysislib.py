@@ -21,6 +21,12 @@ def format_size(size):
         i += 1
     return f"{size:.1f} {suffixes[i]}"
 
+# this is specifically for the size string included in the memlim parameter (the memory.max parameter
+# passed to cgroup)
+def unformat_size_memlim(size_string):
+    suffixes=["K", "M", "G"]
+    return int(size_string[:-1]) * pow(1024, 1+suffixes.index(size_string[-1]))
+
 # Converts time (in n) to a string specifying time with most appropriate suffix
 # written by chatgpt lol
 def format_time(time_in_ns):
@@ -37,20 +43,6 @@ def format_time(time_in_ns):
     
     # Format the result
     return f"{time_in_ns:.1f} {units[i]}"
-
-def create_simpl_columns(table):
-    # applies units and formats strings
-    formatfuncs = {
-        "readBW_bytes": format_size,
-        "writeBW_bytes": format_size,
-        "avgreadlat_ns": format_time,
-        "avgwritelat_ns": format_time
-    }
-    
-    for cname, cfunc in formatfuncs.items():
-        table[cname.split('_')[0]] = table[cname].apply(cfunc)
-
-    return table
 
 # ------------------------------
 # Graphical
