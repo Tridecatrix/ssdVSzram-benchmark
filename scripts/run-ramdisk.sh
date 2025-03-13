@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run.sh ramdisk > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# nohup ./scripts/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
+# nohup ./scripts/run-ramdisk.sh ramdisk | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
 
 # ----------------------------------
 # parameters
@@ -20,9 +20,13 @@ outputFormat="json"
 
 # constants
 totalSize=$((32 * 1024 * 1024 * 1024))
-RAMdir="/mnt/mem"
+RAMdir="/mnt/tmpfs"
 HOMEdir="/home/users/u7300623/ssdVSzram-benchmark" # change to root directory of this repo
 # note: to change which folder results are stored in, change RESULTSDIR further below
+
+# config file paths
+sync_config="$HOMEdir/config/2025-03-12-ramdisk/sync.fio"
+async_config="$HOMEdir/config/2025-03-12-ramdisk/async.fio"
 
 # options for other fio variables
 block_sizes=(4096)
@@ -138,9 +142,9 @@ for bs in "${block_sizes[@]}"; do
           mkdir -p $SUBSUBDIR
 
           ./system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$RAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio config/async.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$RAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
-          ./system_util/extract-data.sh -r $SUBSUBDIR -d tmpfs
+          ./system_util/extract-data.sh -r $SUBSUBDIR
 
           ./scripts/clear_job_files.sh $RAMdir $RAMdir
         done
@@ -153,9 +157,11 @@ for bs in "${block_sizes[@]}"; do
         mkdir -p $SUBSUBDIR
 
         ./system_util/start_statistics.sh -d $SUBSUBDIR
-        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$RAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$RAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
-        ./system_util/extract-data.sh -r $SUBSUBDIR -d tmpfs
+        ./system_util/extract-data.sh -r $SUBSUBDIR
+
+        ./scripts/clear_job_files.sh $RAMdir $RAMdir
       done
 
       echo ""

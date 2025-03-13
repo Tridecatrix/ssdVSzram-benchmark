@@ -1,0 +1,7 @@
+Total file size during runs: 34359738368
+Block sizes: 4096
+Numbers of processes: 1 32 64 96
+Read/write type options: read write rw randread randwrite randrw
+Async I/O engines: libaio io_uring
+Async I/O depths: 64 128
+Sync I/O engines: sync mmap
