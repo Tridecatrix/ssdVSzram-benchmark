@@ -25,8 +25,8 @@ SSDdir="/mnt/ssd/adnan/bench"
 ZRAMdir="$HOMEdir/zrammount"
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-10-third-run-memlim/sync.fio"
-async_config="$HOMEdir/config/2025-03-10-third-run-memlim/async.fio"
+sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
+async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
 
 # options for other fio variables
 block_sizes=(4096)
@@ -137,7 +137,7 @@ for bs in "${block_sizes[@]}"; do
           mkdir -p $SUBSUBDIR
 
           ./system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio config/async.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
           ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
@@ -146,7 +146,7 @@ for bs in "${block_sizes[@]}"; do
           mkdir -p $SUBSUBDIR
 
           ./system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio config/async.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
           ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
 
@@ -161,7 +161,7 @@ for bs in "${block_sizes[@]}"; do
         mkdir -p $SUBSUBDIR
 
         ./system_util/start_statistics.sh -d $SUBSUBDIR
-        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
         ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
@@ -170,7 +170,7 @@ for bs in "${block_sizes[@]}"; do
         mkdir -p $SUBSUBDIR
 
         ./system_util/start_statistics.sh -d $SUBSUBDIR
-        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio config/sync.fio --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
         ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
