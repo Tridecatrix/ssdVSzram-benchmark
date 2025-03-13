@@ -20,18 +20,26 @@ outputFormat="json"
 
 # constants
 totalSize=$((32 * 1024 * 1024 * 1024))
+HOMEdir=`git rev-parse --show-toplevel`
 SSDdir="/mnt/ssd/adnan/bench"
-ZRAMdir="/home/users/u7300623/ssdVSzram-benchmark/zrammount"
-HOMEdir="/home/users/u7300623/ssdVSzram-benchmark" # change to root directory of this repo
-# note: to change which folder results are stored in, change RESULTSDIR further below
+ZRAMdir="$HOMEdir/zrammount"
+
+# config file paths
+sync_config="$HOMEdir/config/2025-03-10-third-run-memlim/sync.fio"
+async_config="$HOMEdir/config/2025-03-10-third-run-memlim/async.fio"
 
 # options for other fio variables
 block_sizes=(4096)
-nprocs=(1 32 64)
-iodepths=(64 128)
+nprocs=(64)
+iodepths=(128)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
+
+EXPNAME=compression-alg
+
+RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
+mkdir -p $RESULTSDIR
 
 # ---------------------------------
 # setup and pre-run checks
@@ -81,20 +89,9 @@ if [[ $# -gt 1 ]]; then
     echo "Usage: ./run.sh expname"
 fi
 
-if [[ -z $1 ]]; then
-    EXPNAME=unnamed
-else
-    EXPNAME=$1
-fi
-
-RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
-
-mkdir -p $RESULTSDIR
-
 # clear any existing job files in the directories
 if [ -z $testrunopt ]; then
-  rm $ZRAMdir/job-* 
-  rm $SSDdir/job-* 
+  ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
 fi
 
 # ----------------------------------
