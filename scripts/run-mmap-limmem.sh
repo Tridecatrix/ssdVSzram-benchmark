@@ -33,7 +33,7 @@ block_sizes=(4096)
 nprocs=(64)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("mmap")
-memlims=("16M" "32M" "64M" "128M" "256M" "512M" "1G")
+memlims=("256M" "512M" "1G" "2G" "4G" "8G" "16G" "32G" "64G")
 directopts=(0 1)
 
 EXPNAME=third-run-limmem-pp
