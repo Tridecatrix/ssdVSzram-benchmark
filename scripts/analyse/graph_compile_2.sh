@@ -1,9 +1,9 @@
 #!/bin/bash
 
-INDIR="processed-data/2025-03-04-second-run-finch2/graphs"
+INDIR="processed-data/2025-03-13-ramdisk/graphs"
 
 INPUTFILES=""
-for iotype in 'iouring' 'libaio' 'sync' 'mmap'; do
+for iotype in 'io_uring' 'libaio' 'sync' 'mmap'; do
   for metric in 'readBW' 'writeBW' 'readlat' 'writelat'; do
     INPUTFILES="$INPUTFILES $INDIR/$metric/max-$iotype.png"
   done

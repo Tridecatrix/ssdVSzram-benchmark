@@ -72,7 +72,7 @@ def format_time(time_in_ns):
 #        defaults to range(0, len(xs)). expected use case is if using multiple calls to this function, e.g. some bars are different color
 #        e.g. if you want some sets of bars to be a different color, but there are some issues with this that haven't
 #        been ironed out yet, e.g. how would the legend work for something like this?
-def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], l=0.7, d=None, labels=None, show=True, colors=None, xpos=[]):
+def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], l=0.7, d=None, labels=None, show=True, colors=None, xpos=[], fontsize=10):
     plt.figure(figsize=figsize)
     
     plt.grid(which="major", axis="y", zorder=0)
@@ -113,6 +113,29 @@ def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4
     if show:
         plt.show()
 
+# Helper function for grouped_barplot_flat (see below)
+def unflatten_ys(xs, ys, roworder=True):
+    rowLength = len(xs)
+    colLength = len(ys) // len(xs)
+
+    if roworder:
+        # e.g. xs = [row1, row2], ys = [1, 2, 3, 4, 5, 6]
+        # then it would group as yss = [[1,2,3], [4,5,6]]
+        yss = [ys[rowLength*i : rowLength*(i+1)] for i in range(colLength)]
+    else:
+        # e.g. xs = [row1, row2], ys = [1, 2, 3, 4, 5, 6]
+        # then it would group as yss = [[1,3,5], [2,4,6]]
+        # i.e. ys is in column order
+        yss = [ys[i : : rowLength] for i in range(colLength)]
+    
+    return yss
+
+# Version of grouped barplot where yss is a flattened list, and the grouping is inferred
+def grouped_barplot_flat(xs, ys, roworder=True, **kwargs):
+    yss = unflatten_ys(xs, ys, roworder)
+    grouped_barplot(xs, yss, **kwargs)
+
+
 # Given a hex color, adjust its brightness
 def adjust_lightness(color, amount=0.5):
     import matplotlib.colors as mc
@@ -124,3 +147,11 @@ def adjust_lightness(color, amount=0.5):
     c = colorsys.rgb_to_hls(*mc.to_rgb(c))
     return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
 
+default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+# -----------------------------
+# Misc
+# -----------------------------
+
+def flatten(xss):
+    return [x for xs in xss for x in xs]

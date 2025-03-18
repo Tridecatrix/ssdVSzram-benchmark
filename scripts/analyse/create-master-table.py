@@ -137,6 +137,11 @@ for cname, cjson in allDataJson.items():
                     value = "zram"
                 elif "ssd" in directory:
                     value = "ssd"
+                elif "tmpfs" in directory:
+                    value = "ram"
+                else:
+                    print("Unable to identify device given directory " + directory)
+                    exit(1)
             
             if colname == "cmemlim":
                 if "cgroup" in cjson["job options"] and "memlim" in cjson["job options"]["cgroup"]:
