@@ -1,0 +1,7 @@
+Total file size during runs: 34359738368
+Block sizes: 4096
+Numbers of processes: 64
+Read/write type options: read write rw randread randwrite randrw
+Sync I/O engines: mmap
+Cgrouped memory limits: 64M 128M 256M 512M 1G 2G 4G 8G 16G 32G 64G
+Options for DIRECT: 0 1
