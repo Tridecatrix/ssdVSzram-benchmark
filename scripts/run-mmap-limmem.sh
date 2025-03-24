@@ -33,7 +33,7 @@ block_sizes=(4096)
 nprocs=(64)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("mmap")
-memlims=("256M" "512M" "1G" "2G" "4G" "8G" "16G" "32G" "64G")
+memlims=("64M" "128M" "256M" "512M" "1G" "2G" "4G" "8G" "16G" "32G" "64G")
 directopts=(0 1)
 
 EXPNAME=third-run-limmem-pp
@@ -50,11 +50,11 @@ cd $HOMEdir
 # assert that nobody else is on the machine
 # - note: based on how you're running the script, you may count as one of the users outputted as who;
 #   in this case update below comparison to "$(($nusers-1)) -gt 0"
-nusers=`who | wc -l`
-if [[ $nusers -gt 0 ]]; then
-  echo "Detected $nusers other users on the machine; aborting"
-  exit
-fi
+# nusers=`who | wc -l`
+# if [[ $nusers -gt 0 ]]; then
+#   echo "Detected $nusers other users on the machine; aborting"
+#   exit
+# fi
 
 # TODO: add check that no other processes are running
 # - maybe filter output of top for processes with above 50% utilisation

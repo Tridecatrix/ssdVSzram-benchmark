@@ -11,7 +11,7 @@ Block sizes: 4096
 Numbers of processes: 64
 Read/write type options: read write rw randread randwrite randrw
 Sync I/O engines: mmap
-Cgrouped memory limits: 256M 512M 1G 2G 4G 8G 16G 32G 64G
+Cgrouped memory limits: 64M 128M 256M 512M 1G 2G 4G 8G 16G 32G 64G
 Options for DIRECT: 0 1
 
 Zram config:
@@ -21,6 +21,58 @@ NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
 /dev/zram0 lzo           128G  32G   32G   32G     112 /home/users/u7300623/ssdVSzram-benchmark/zrammount
 
 beginning runs
+
+running fio with block size 4096, 64 processes, read for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, read for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, read for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, read for read/write setting, 128M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
 
 running fio with block size 4096, 64 processes, read for read/write setting, 256M memory allocation and DIRECT=0
 running sync (engine mmap) on zram
@@ -244,6 +296,60 @@ ModuleNotFoundError: No module named 'matplotlib'
 clearing job files on ZRAM and SSD
 
 running fio with block size 4096, 64 processes, read for read/write setting, 64G memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, write for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, write for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3165411, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, write for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, write for read/write setting, 128M memory allocation and DIRECT=1
 running sync (engine mmap) on zram
 Traceback (most recent call last):
   File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
@@ -490,6 +596,58 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'matplotlib'
 clearing job files on ZRAM and SSD
 
+running fio with block size 4096, 64 processes, rw for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, rw for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, rw for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, rw for read/write setting, 128M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
 running fio with block size 4096, 64 processes, rw for read/write setting, 256M memory allocation and DIRECT=0
 running sync (engine mmap) on zram
 Traceback (most recent call last):
@@ -712,6 +870,128 @@ ModuleNotFoundError: No module named 'matplotlib'
 clearing job files on ZRAM and SSD
 
 running fio with block size 4096, 64 processes, rw for read/write setting, 64G memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randread for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+fio: pid=3192991, got signal=9
+fio: pid=3192987, got signal=9
+fio: pid=3192995, got signal=9
+fio: pid=3193004, got signal=9
+fio: pid=3192996, got signal=9
+fio: pid=3193000, got signal=9
+fio: pid=3192941, got signal=9
+fio: pid=3192999, got signal=9
+fio: pid=3192988, got signal=9
+fio: pid=3193003, got signal=9
+fio: pid=3193001, got signal=9
+fio: pid=3192984, got signal=9
+fio: pid=3192962, got signal=9
+fio: pid=3193002, got signal=9
+fio: pid=3192957, got signal=9
+fio: pid=3192985, got signal=9
+fio: pid=3192989, got signal=9
+fio: pid=3192980, got signal=9
+fio: pid=3192960, got signal=9
+fio: pid=3192979, got signal=9
+fio: pid=3192949, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3193300, got signal=9
+fio: pid=3193267, got signal=9
+fio: pid=3193278, got signal=9
+fio: pid=3193302, got signal=9
+fio: pid=3193295, got signal=9
+fio: pid=3193264, got signal=9
+fio: pid=3193251, got signal=9
+fio: pid=3193261, got signal=9
+fio: pid=3193290, got signal=9
+fio: pid=3193242, got signal=9
+fio: pid=3193297, got signal=9
+fio: pid=3193271, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randread for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+fio: pid=3193641, got signal=9
+fio: pid=3193621, got signal=9
+fio: pid=3193636, got signal=9
+fio: pid=3193638, got signal=9
+fio: pid=3193640, got signal=9
+fio: pid=3193643, got signal=9
+fio: pid=3193644, got signal=9
+fio: pid=3193582, got signal=9
+fio: pid=3193623, got signal=9
+fio: pid=3193639, got signal=9
+fio: pid=3193645, got signal=9
+fio: pid=3193634, got signal=9
+fio: pid=3193633, got signal=9
+fio: pid=3193635, got signal=9
+fio: pid=3193631, got signal=9
+fio: pid=3193586, got signal=9
+fio: pid=3193624, got signal=9
+fio: pid=3193620, got signal=9
+fio: pid=3193595, got signal=9
+fio: pid=3193612, got signal=9
+fio: pid=3193642, got signal=9
+fio: pid=3193613, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3193934, got signal=9
+fio: pid=3193907, got signal=9
+fio: pid=3193940, got signal=9
+fio: pid=3193900, got signal=9
+fio: pid=3193938, got signal=9
+fio: pid=3193935, got signal=9
+fio: pid=3193933, got signal=9
+fio: pid=3193924, got signal=9
+fio: pid=3193932, got signal=9
+fio: pid=3193902, got signal=9
+fio: pid=3193898, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randread for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randread for read/write setting, 128M memory allocation and DIRECT=1
 running sync (engine mmap) on zram
 Traceback (most recent call last):
   File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
@@ -958,6 +1238,96 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'matplotlib'
 clearing job files on ZRAM and SSD
 
+running fio with block size 4096, 64 processes, randwrite for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+fio: pid=3205872, got signal=9
+fio: pid=3205873, got signal=9
+fio: pid=3205874, got signal=9
+fio: pid=3205852, got signal=9
+fio: pid=3205851, got signal=9
+fio: pid=3205877, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3206538, got signal=9
+fio: pid=3206512, got signal=9
+fio: pid=3206520, got signal=9
+fio: pid=3206535, got signal=9
+fio: pid=3206509, got signal=9
+fio: pid=3206541, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randwrite for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+fio: pid=3207025, got signal=9
+fio: pid=3207023, got signal=9
+fio: pid=3207029, got signal=9
+fio: pid=3207030, got signal=9
+fio: pid=3207028, got signal=9
+fio: pid=3207031, got signal=9
+fio: pid=3207020, got signal=9
+fio: pid=3207022, got signal=9
+fio: pid=3207000, got signal=9
+fio: pid=3206997, got signal=9
+fio: pid=3207032, got signal=9
+fio: pid=3207033, got signal=9
+fio: pid=3207014, got signal=9
+fio: pid=3206995, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3207385, got signal=9
+fio: pid=3207364, got signal=9
+fio: pid=3207380, got signal=9
+fio: pid=3207340, got signal=9
+fio: pid=3207386, got signal=9
+fio: pid=3207383, got signal=9
+fio: pid=3207361, got signal=9
+fio: pid=3207382, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randwrite for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randwrite for read/write setting, 128M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
 running fio with block size 4096, 64 processes, randwrite for read/write setting, 256M memory allocation and DIRECT=0
 running sync (engine mmap) on zram
 Traceback (most recent call last):
@@ -1180,6 +1550,100 @@ ModuleNotFoundError: No module named 'matplotlib'
 clearing job files on ZRAM and SSD
 
 running fio with block size 4096, 64 processes, randwrite for read/write setting, 64G memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randrw for read/write setting, 64M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+fio: pid=3221140, got signal=9
+fio: pid=3221161, got signal=9
+fio: pid=3221157, got signal=9
+fio: pid=3221102, got signal=9
+fio: pid=3221117, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3221684, got signal=9
+fio: pid=3221700, got signal=9
+fio: pid=3221696, got signal=9
+fio: pid=3221665, got signal=9
+fio: pid=3221669, got signal=9
+fio: pid=3221693, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randrw for read/write setting, 64M memory allocation and DIRECT=1
+running sync (engine mmap) on zram
+fio: pid=3222199, got signal=9
+fio: pid=3222203, got signal=9
+fio: pid=3222195, got signal=9
+fio: pid=3222224, got signal=9
+fio: pid=3222222, got signal=9
+fio: pid=3222225, got signal=9
+fio: pid=3222197, got signal=9
+fio: pid=3222221, got signal=9
+fio: pid=3222211, got signal=9
+fio: pid=3222220, got signal=9
+fio: pid=3222223, got signal=9
+fio: pid=3222227, got signal=9
+fio: pid=3222202, got signal=9
+fio: pid=3222226, got signal=9
+fio: pid=3222190, got signal=9
+fio: pid=3222194, got signal=9
+fio: pid=3222210, got signal=9
+fio: pid=3222219, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+fio: pid=3222569, got signal=9
+fio: pid=3222576, got signal=9
+fio: pid=3222574, got signal=9
+fio: pid=3222531, got signal=9
+fio: pid=3222575, got signal=9
+fio: pid=3222577, got signal=9
+fio: pid=3222571, got signal=9
+fio: pid=3222573, got signal=9
+fio: pid=3222570, got signal=9
+fio: file hash not empty on exit
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randrw for read/write setting, 128M memory allocation and DIRECT=0
+running sync (engine mmap) on zram
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+running sync (engine mmap) on ssd
+Traceback (most recent call last):
+  File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
+    import matplotlib
+ModuleNotFoundError: No module named 'matplotlib'
+clearing job files on ZRAM and SSD
+
+running fio with block size 4096, 64 processes, randrw for read/write setting, 128M memory allocation and DIRECT=1
 running sync (engine mmap) on zram
 Traceback (most recent call last):
   File "/home/users/u7300623/ssdVSzram-benchmark/system_util/plot_iostat.py", line 16, in <module>
