@@ -1,8 +1,0 @@
-job: (g=0): rw=randwrite, bs=(R) 512B-512B, (W) 512B-512B, (T) 512B-512B, ioengine=io_uring, iodepth=64
-fio-3.16
-Starting 1 process
-job: Laying out IO file (1 file / 32768MiB)
-fio: pid=0, err=13/file:filesetup.c:162, func=open, error=Permission denied
-
-
-Run status group 0 (all jobs):

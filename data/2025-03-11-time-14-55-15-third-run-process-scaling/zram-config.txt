@@ -1,2 +1,0 @@
-NAME       ALGORITHM DISKSIZE  DATA COMPR TOTAL STREAMS MOUNTPOINT
-/dev/zram0 lzo           250G 79.1G   79G   79G     112 /home/users/u7300623/ssdVSzram-benchmark/zrammount

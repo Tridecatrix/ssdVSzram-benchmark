@@ -1,7 +1,0 @@
-Total file size during runs: 34359738368
-Block sizes: 4096
-Numbers of processes: 32 48 64 72 84 96
-Read/write type options: read write rw randread randwrite randrw
-Async I/O engines: 
-Async I/O depths: 
-Sync I/O engines: sync mmap
