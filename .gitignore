@@ -1,6 +1,10 @@
 tmp
 tmp/*
 zrammount
+
 .ipynb_checkpoints
 __pycache__
-dacapo-*
+
+dacapo*
+scratch
+dumps
