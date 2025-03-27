@@ -69,17 +69,17 @@ fi
 for di in ${!dev_names[@]}; do
   # assert that directories exist
   if [ ! -d "${dev_paths[$di]}" ]; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, does not exist."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, does not exist."
   fi
 
   # assert that directories are accessible
   if [ ! -x "${dev_paths[$di]}" ]; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not accessible."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not accessible."
   fi
 
   # assert that the directories are mounted on correct devices
   if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not mounted on the specified device."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not mounted on the specified device."
   fi
 done
 
@@ -138,7 +138,6 @@ for bs in "${block_sizes[@]}"; do
             $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
             echo "done"
-            echo ""
           done
         done
       done
@@ -160,9 +159,10 @@ for bs in "${block_sizes[@]}"; do
           $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
           echo "done"
-          echo ""
         done
       done
+
+    echo ""
     done
   done
 done
