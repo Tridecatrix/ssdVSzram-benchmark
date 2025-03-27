@@ -19,7 +19,6 @@ testrunopt=""
 outputFormat="json"
 
 # constants
-totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
@@ -29,18 +28,19 @@ dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
-async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
+sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
 
 # options for other fio variables
 block_sizes=(4096)
-nprocs=(64)
-iodepths=(128)
-rws=("read" "write" "rw" "randread" "randwrite" "randrw")
-sync_ioengines=("sync" "mmap")
-async_ioengines=("libaio" "io_uring")
+nprocs=(8)
+#rws=("read" "write" "rw" "randread" "randwrite" "randrw")
+rws=("read" "randread")
+sync_ioengines=("mmap")
 
-EXPNAME=compression-alg
+# dacapo benchmarks
+dacapo_benchs=("avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing")
+
+EXPNAME=fourth-run-dumps
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
@@ -69,17 +69,17 @@ fi
 for di in ${!dev_names[@]}; do
   # assert that directories exist
   if [ ! -d "${dev_paths[$di]}" ]; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, does not exist."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, does not exist."
   fi
 
   # assert that directories are accessible
   if [ ! -x "${dev_paths[$di]}" ]; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not accessible."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not accessible."
   fi
 
   # assert that the directories are mounted on correct devices
   if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
-    echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not mounted on the specified device."
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not mounted on the specified device."
   fi
 done
 
@@ -117,53 +117,38 @@ echo ""
 for bs in "${block_sizes[@]}"; do
   for nproc in "${nprocs[@]}"; do
     for rw in "${rws[@]}"; do
-      echo "running fio with block size $bs, $nproc processes and $rw for read/write setting"
+      for ioengine in "${sync_ioengines[@]}"; do
+        for di in "${!dev_names[@]}"; do
+          echo "running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]}"
+          SUBDIR="$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}"
 
-      SUBDIR="$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs"
+          # iterate through each heap dump, ignoring the first and last from each benchmark
+          for bc in "${dacapo_benchs[@]}"; do
+            ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
 
-      # run async configs
-      for ioengine in "${async_ioengines[@]}"; do
-        for iodepth in "${iodepths[@]}"; do
-          for di in "${!dev_names[@]}"; do
-            echo "running async (engine $ioengine, iodepth $iodepth) on ${dev_names[$di]}"
-            SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/${dev_names[$di]}"
-            mkdir -p $SUBSUBDIR
+            # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
+            for i in `seq $(($ndumps-1))`; do
+              # remove any existing files
+              find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 
-            echo "removing job files if they exist"
-            rm -f ${dev_paths[$di]}/job-* 
+              # copy over the heap dump
+              cp $HOMEdir/dumps/$bc-$i.hprof ${dev_paths[$di]}
+              DUMPFILE=${dev_paths[$di]}/$bc-$i.hprof
 
-            echo "beginning run"
-            $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
-            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-            $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
-            $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
+              # run fio over the heap dump file
 
-            echo "done"
+              echo "running fio on heapdump $bc-$i"
+              SUBSUBDIR=$SUBDIR/$bc/dump-$i
+              mkdir -p $SUBSUBDIR
+
+              $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
+              BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+              $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
+              $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
+            done
           done
         done
       done
-
-      # run sync configs
-      for ioengine in "${sync_ioengines[@]}"; do
-        for di in "${!dev_names[@]}"; do
-          echo "running sync (engine $ioengine) on ${dev_names[$di]}"
-          SUBSUBDIR="$SUBDIR/sync-$ioengine/${dev_names[$di]}"
-          mkdir -p $SUBSUBDIR
-
-          echo "removing job files if they exist"
-          rm -f ${dev_paths[$di]}/job-* 
-
-          echo "beginning run"
-          $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-          $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
-          $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
-
-          echo "done"
-        done
-      done
-
-    echo ""
     done
   done
 done
