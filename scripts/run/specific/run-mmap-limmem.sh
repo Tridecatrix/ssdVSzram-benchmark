@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Script for third run, which specified a cgroup parameter to fio to limit memory capacity.
+# Note: currently missing some features from main run script.
+
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Specific run script for testing ramdisk.
+# Note: missing some features later added to the main run script.
+
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:

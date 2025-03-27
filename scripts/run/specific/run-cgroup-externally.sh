@@ -1,12 +1,14 @@
 #!/bin/bash
 
+# Inner script used by run-cgroup-exernally.sh.
+
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run-process-scaling.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# nohup ./scripts/run-process-scaling.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
+# nohup ./scripts/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
 
 # ----------------------------------
 # parameters
@@ -23,7 +25,6 @@ totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 SSDdir="/mnt/ssd/adnan/bench"
 ZRAMdir="$HOMEdir/zrammount"
-# note: to change which folder results are stored in, change RESULTSDIR further below
 
 # config file paths
 sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
@@ -31,13 +32,13 @@ async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
 
 # options for other fio variables
 block_sizes=(4096)
-nprocs=(32 48 64 72 84 96)
-iodepths=()
-rws=("read" "write" "rw" "randread" "randwrite" "randrw")
-sync_ioengines=("sync" "mmap")
+nprocs=(64)
+iodepths=(128)
+rws=("read")
+sync_ioengines=("mmap")
 async_ioengines=()
 
-EXPNAME=third-run-process-scaling
+EXPNAME=fio-w-direct-cgroup
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
@@ -51,11 +52,12 @@ cd $HOMEdir
 # assert that nobody else is on the machine
 # - note: based on how you're running the script, you may count as one of the users outputted as who;
 #   in this case update below comparison to "$(($nusers-1)) -gt 0"
-nusers=`who | wc -l`
-if [[ $nusers -gt 0 ]]; then
-  echo "Detected $nusers other users on the machine; aborting"
-  exit
-fi
+# nusers=`who | wc -l`
+# if [[ $nusers -gt 0 ]]; then
+#   echo "Detected $nusers other users on the machine; aborting"
+#   exit
+# fi
+# NOTE: DISABLING THIS CHECK BECAUSE THIS IS RUN FROM SUDO
 
 # TODO: add check that no other processes are running
 # - maybe filter output of top for processes with above 50% utilisation
@@ -85,10 +87,14 @@ else
   exit
 fi
 
+if [[ $# -gt 1 ]]; then
+    # expname is name of experiment, which is appended to the result directory name created in directory data
+    echo "Usage: ./run.sh expname"
+fi
+
 # clear any existing job files in the directories
 if [ -z $testrunopt ]; then
-  rm $ZRAMdir/job-* 
-  rm $SSDdir/job-* 
+  ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
 fi
 
 # ----------------------------------
@@ -145,7 +151,7 @@ for bs in "${block_sizes[@]}"; do
           ./system_util/start_statistics.sh -d $SUBSUBDIR
           SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
-          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0c0n1
+          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
 
           ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
         done
@@ -169,7 +175,7 @@ for bs in "${block_sizes[@]}"; do
         ./system_util/start_statistics.sh -d $SUBSUBDIR
         SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
-        ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0c0n1
+        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
         ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
       done

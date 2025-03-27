@@ -21,8 +21,12 @@ outputFormat="json"
 # constants
 totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
-SSDdir="/mnt/ssd/adnan/bench"
-ZRAMdir="$HOMEdir/zrammount"
+
+# device settings
+dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
+dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
 sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
@@ -61,38 +65,25 @@ fi
 # - ps u $(pgrep -v -u root) is a start but picks up the shell process that the user is running this script from,
 # as well as a bunch of other random system processes
 
-# assert that directories exist
-if [ -d "$SSDdir" ] && [ -d "$ZRAMdir" ]; then
-  echo "Verified the ZRAM and SSD directories exist"
-else
-  echo "one of ZRAM or SSD directories doesn't exist"
-  exit
-fi
 
-if [ -x "$SSDdir" ] && [ -x "$ZRAMdir" ]; then
-  echo "Verified that ZRAM and SSD directories exist and are accessible."
-else
-  echo "Permission issues with accessing ZRAM and SSD; please check."
-  exit
-fi
+for di in ${!dev_names[@]}; do
+  # assert that directories exist
+  if [ ! -d "${dev_paths[$di]}" ]; then
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, does not exist."
+  fi
 
-# assert that ZRAM is mounted
-if grep -qs "/dev/zram0 ${ZRAMdir} " /proc/mounts; then
-  echo "Verified that ZRAM is mounted."
-else
-  echo "ZRAM is not mounted on the specified directory; please fix."
-  exit
-fi
+  # assert that directories are accessible
+  if [ ! -x "${dev_paths[$di]}" ]; then
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not accessible."
+  fi
 
-if [[ $# -gt 1 ]]; then
-    # expname is name of experiment, which is appended to the result directory name created in directory data
-    echo "Usage: ./run.sh expname"
-fi
+  # assert that the directories are mounted on correct devices
+  if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
+    echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not mounted on the specified device."
+  fi
+done
 
-# clear any existing job files in the directories
-if [ -z $testrunopt ]; then
-  ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
-fi
+echo "Completed pre-run checks; all directories specified were found, accessible and mounted on specified devices."
 
 # ----------------------------------
 # print run config and zram config
@@ -132,53 +123,46 @@ for bs in "${block_sizes[@]}"; do
       # run async configs
       for ioengine in "${async_ioengines[@]}"; do
         for iodepth in "${iodepths[@]}"; do
-          echo "running async (engine $ioengine, iodepth $iodepth) on zram"
-          SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/zram"
-          mkdir -p $SUBSUBDIR
+          for di in "${!dev_names[@]}"; do
+            echo "running async (engine $ioengine, iodepth $iodepth) on ${dev_names[$di]}"
+            SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/${dev_names[$di]}"
+            mkdir -p $SUBSUBDIR
 
-          ./system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-          ./system_util/stop_statistics.sh -d $SUBSUBDIR
-          ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
+            echo "removing job files if they exist"
+            rm -f ${dev_paths[$di]}/job-* 
 
-          echo "running async (engine $ioengine, iodepth $iodepth) on ssd"
-          SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/ssd"
-          mkdir -p $SUBSUBDIR
+            echo "beginning run"
+            $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
+            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+            $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
+            $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
-          ./system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-          ./system_util/stop_statistics.sh -d $SUBSUBDIR
-          ./system_util/extract-data.sh -r $SUBSUBDIR -d nvme0n1
-
-          ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
+            echo "done"
+            echo ""
+          done
         done
       done
 
       # run sync configs
       for ioengine in "${sync_ioengines[@]}"; do
-        echo "running sync (engine $ioengine) on zram"
-        SUBSUBDIR="$SUBDIR/sync-$ioengine/zram"
-        mkdir -p $SUBSUBDIR
+        for di in "${!dev_names[@]}"; do
+          echo "running sync (engine $ioengine) on ${dev_names[$di]}"
+          SUBSUBDIR="$SUBDIR/sync-$ioengine/${dev_names[$di]}"
+          mkdir -p $SUBSUBDIR
 
-        ./system_util/start_statistics.sh -d $SUBSUBDIR
-        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-        ./system_util/stop_statistics.sh -d $SUBSUBDIR
-        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
+          echo "removing job files if they exist"
+          rm -f ${dev_paths[$di]}/job-* 
 
-        echo "running sync (engine $ioengine) on ssd"
-        SUBSUBDIR="$SUBDIR/sync-$ioengine/ssd"
-        mkdir -p $SUBSUBDIR
+          echo "beginning run"
+          $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
+          $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
-        ./system_util/start_statistics.sh -d $SUBSUBDIR
-        SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$SSDdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
-        ./system_util/stop_statistics.sh -d $SUBSUBDIR
-        ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
-
-        ./scripts/clear_job_files.sh $ZRAMdir $SSDdir
+          echo "done"
+          echo ""
+        done
       done
-
-      echo ""
-
     done
   done
 done
