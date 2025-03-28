@@ -137,7 +137,7 @@ for bs in "${block_sizes[@]}"; do
 
               # run fio over the heap dump file
 
-              echo "running fio on heapdump $bc-$i"
+              echo "`date +%F/%H:%M:%S:`: running fio on heapdump $bc-$i"
               SUBSUBDIR=$SUBDIR/$bc/dump-$i
               mkdir -p $SUBSUBDIR
 
