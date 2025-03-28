@@ -132,13 +132,13 @@ for bs in "${block_sizes[@]}"; do
             echo "removing job files if they exist"
             rm -f ${dev_paths[$di]}/job-* 
 
-            echo "beginning run"
+            echo "`date +%F/%H:%M:%S:` beginning run"
             $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
             SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
             $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
             $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
-            echo "done"
+            echo "`date +%F/%H:%M:%S:` done"
           done
         done
       done

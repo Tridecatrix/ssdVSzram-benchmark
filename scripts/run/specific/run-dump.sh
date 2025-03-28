@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-dump.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# nohup ./scripts/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
+# nohup ./scripts/run/specific/run-dump.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' &
 
 # ----------------------------------
 # parameters
@@ -38,7 +38,8 @@ rws=("read" "randread")
 sync_ioengines=("mmap")
 
 # dacapo benchmarks
-dacapo_benchs=("avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing")
+dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+dacapo_benchs=($dacapo_benchs)
 
 EXPNAME=fourth-run-dumps
 
@@ -127,7 +128,7 @@ for bs in "${block_sizes[@]}"; do
             ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
 
             # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
-            for i in `seq $(($ndumps-1))`; do
+            for i in `seq 0 $(($ndumps-2))`; do
               # remove any existing files
               find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 

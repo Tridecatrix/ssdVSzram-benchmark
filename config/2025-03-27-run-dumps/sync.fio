@@ -6,5 +6,5 @@ ioengine=${IOENGINE}
 numjobs=${NPROC}
 group_reporting
 allow_file_create=1
-file=${FILE}
+filename=${FILE}
 rw=${RW}
