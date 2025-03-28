@@ -90,7 +90,8 @@ params = {
     "nproc": "job options:numjobs",
     "device": "special",
     "direct": "job options:direct",
-    "memlim": "special"
+    "memlim": "special",
+    "file": "special"
 }
 metrics = {
     "readBW_bytes": "read:bw_bytes",
@@ -113,7 +114,7 @@ formatfuncs = {
     "writeBW_bytes": ("writeBW", alib.format_size),
     "avgreadlat_ns": ("avgreadlat", alib.format_time),
     "avgwritelat_ns": ("avgwritelat", alib.format_time),
-    "cmemlim": ("cmemlim_bytes", alib.unformat_size_memlim)
+    "cmemlim": ("cmemlim_bytes", alib.unformat_size_1)
 }
 
 columns = {**{"c" + pname: ppath for pname, ppath in params.items()}, **metrics}
@@ -127,20 +128,23 @@ for cname, cjson in allDataJson.items():
 
     cjson = cjson["jobs"][0]
     for colname, colpath in columns.items():
-        value = cjson
-
         if colpath == "special":
 
             if colname == "cdevice":
-                directory = cjson["job options"]["directory"]
-                if "zram" in directory:
-                    value = "zram"
-                elif "ssd" in directory:
-                    value = "ssd"
-                elif "tmpfs" in directory:
-                    value = "ram"
+                target = cjson["job options"]["directory"] if "directory" in cjson["job options"] else cjson["job options"]["filename"]
+
+                for mntpoint, dname in {
+                    "mnt/ssd": "ssd", 
+                    "zrammnt0": "zram-lzo",
+                    "zrammnt1": "zram-zstd",
+                    "zrammnt2": "zram-lz4",
+                    "tmpfs": "ram"
+                }.items():
+                    if mntpoint in target:
+                        value = dname
+                        break
                 else:
-                    print("Unable to identify device given directory " + directory)
+                    print("Unable to identify device given target " + target)
                     exit(1)
             
             if colname == "cmemlim":
@@ -148,8 +152,22 @@ for cname, cjson in allDataJson.items():
                     value = cjson["job options"]["cgroup"].split("/")[1]
                 else:
                     value = "none"
+            
+            if colname == "cfile":
+                if "filename" in cjson["job options"]:
+                    value = cjson["job options"]["filename"].split("/")[-1]
+
+                    # if it a heap dump, add seperate additional columns with the name of the benchmark
+                    if (value.endswith("hprof")):
+                        mRow["cdumpbc"] = value.split(".")[0].split("-")[0]
+                        mRow["cdumpno"] = value.split(".")[0].split("-")[1]
+
+                else:
+                    value = "none"
 
         else:
+            value = cjson
+
             for key in colpath.split(':'):
                 try:
                     value = value[key]

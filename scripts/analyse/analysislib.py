@@ -21,11 +21,11 @@ def format_size(size):
         i += 1
     return f"{size:.1f} {suffixes[i]}"
 
-# this is specifically for the size string included in the memlim parameter (the memory.max parameter
-# passed to cgroup)
-def unformat_size_memlim(size_string):
-    suffixes=["K", "M", "G"]
-    return int(size_string[:-1]) * pow(1024, 1+suffixes.index(size_string[-1]))
+# this is specifically for a size string of the format <number>K/M/G/T
+# such as the format used for memory limit in memlim as well as by zramctl in its size outputs
+def unformat_size_1(size_string):
+    suffixes=["K", "M", "G", "T"]
+    return float(size_string[:-1]) * pow(1024, 1+suffixes.index(size_string[-1]))
 
 # Converts time (in n) to a string specifying time with most appropriate suffix
 # written by chatgpt lol
