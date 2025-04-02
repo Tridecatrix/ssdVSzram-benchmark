@@ -51,6 +51,7 @@ configNames = [] # list of all config names (generated from names of subdirector
 configPaths = {} # dictionary mapping cnames in configNames to paths to their result files
 allDataJson = {} # dictionary mapping cnames in configNames to the JSON dictionary loaded from that config's results
 systemCSVs = {} # dictionary mapping cnames in configNames to a PD dataframe corresponding to its system data (measured by iostat)
+diskstatCSVs = {} # dictionary mapping cnames in configNames to a PD dataframe corresponding to its diskstat data (measured by iostat and diskstat)
 
 for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
     if "fio_out.txt" in subfiles:
@@ -73,6 +74,13 @@ for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
             print("ERROR: config " + cname + " has malformed system.csv")
             print("note: couldn't be bothered coding something graceful for this case so im gonna crash out lol")
             raise
+            
+        try:
+            diskstatCSVs[cname] = pd.read_csv(f"{cpath}/diskstat.csv", header=None, names=["device", "metric", "value"])
+        except:
+            print("ERROR: config " + cname + " has malformed diskstat.csv")
+            print("note: couldn't be bothered coding something graceful for this case so im gonna crash out lol")
+            raise
 
 
 # master table will have columns for params as well as columns for metrics
@@ -82,6 +90,8 @@ for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
 #  - values of 'special' mean this value must be parsed specially (e.g. for device param, need to extract device name from the directory)
 #
 # param keys will be prefixed by 'c-' to specify they are part of the config
+#
+# metrics additionally include any metrics from systemCSV and diskstatCSV
 params = {
     "bSize": "job options:bs",
     "ioengine": "job options:ioengine",
@@ -119,6 +129,27 @@ formatfuncs = {
 
 columns = {**{"c" + pname: ppath for pname, ppath in params.items()}, **metrics}
 
+# lookup tables for 
+# - device names from device mountpoints
+# - device system names from device names (e.g. ssd = nvme0c0n1)
+
+mntpointToDname = {
+                    "mnt/ssd": "ssd", 
+                    "zrammount": "zram-lzo",
+                    "zrammnt0": "zram-lzo",
+                    "zrammnt1": "zram-zstd",
+                    "zrammnt2": "zram-lz4",
+                    "tmpfs": "ram"
+                }
+
+dnameToSysname = {
+    "ssd": "nvme0c0n1",
+    "zram-lzo": "zram0",
+    "zram-zstd": "zram1",
+    "zram-lz4": "zram2",
+    "ram": None # TODO: handle RAM correctly
+}
+
 # main table generation code below
 
 mTable = []
@@ -133,13 +164,7 @@ for cname, cjson in allDataJson.items():
             if colname == "cdevice":
                 target = cjson["job options"]["directory"] if "directory" in cjson["job options"] else cjson["job options"]["filename"]
 
-                for mntpoint, dname in {
-                    "mnt/ssd": "ssd", 
-                    "zrammnt0": "zram-lzo",
-                    "zrammnt1": "zram-zstd",
-                    "zrammnt2": "zram-lz4",
-                    "tmpfs": "ram"
-                }.items():
+                for mntpoint, dname in mntpointToDname.items():
                     if mntpoint in target:
                         value = dname
                         break
@@ -190,6 +215,12 @@ for cname, cjson in allDataJson.items():
     # also add columns for the CPU util/system metrics
     for systemMetric in systemCSVs[cname].index:
         mRow[systemMetric[:-3] + "_perc"] = systemCSVs[cname]["values"][systemMetric]
+
+    # and also add columns for the diskstat metrics
+    dev = dnameToSysname[mRow["cdevice"]]
+    for d in diskstatCSVs[cname].iterrows():
+        if d[1]["device"] == dev:
+            mRow[f"diskutil-{d[1]['metric']}"] = d[1]["value"]
 
     mTable.append(mRow)
 

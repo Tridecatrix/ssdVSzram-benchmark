@@ -6,6 +6,23 @@ import pandas as pd
 import statistics as st
 import os, sys
 import matplotlib.pyplot as plt
+import pandasql as pdsql
+
+# ------------------------------
+# PandaSQL
+# ------------------------------
+
+# Note: the below two definitions unfortunately do not work because globals()
+# only includes the global variables within this library, not any program this library
+# may be imported into, so just copy these two into script where you plan to use them.
+# The dependent library import pdsql is included for convenience.
+''' 
+import pandasql as pdsql
+import analysislib as alib
+
+sq = lambda q: pdsql.sqldf(q, globals())
+sqflat = lambda q: alib.flatten(pdsql.sqldf(q, globals()).values.tolist())
+'''
 
 # ------------------------------
 # Numerical
