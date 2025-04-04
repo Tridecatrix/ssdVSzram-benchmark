@@ -28,7 +28,7 @@ dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
+sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync-timed.fio"
 
 # options for other fio variables
 block_sizes=(4096)
