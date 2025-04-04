@@ -32,7 +32,7 @@ sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
 
 # options for other fio variables
 block_sizes=(4096)
-nprocs=(8)
+nprocs=(32)
 #rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 rws=("read" "randread")
 sync_ioengines=("mmap")
@@ -40,6 +40,9 @@ sync_ioengines=("mmap")
 # dacapo benchmarks
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
 dacapo_benchs=($dacapo_benchs)
+
+# max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
+maxdumps=5
 
 EXPNAME=fourth-run-dumps
 
@@ -127,19 +130,22 @@ for bs in "${block_sizes[@]}"; do
           for bc in "${dacapo_benchs[@]}"; do
             ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
 
-            # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
-            for i in `seq 0 $(($ndumps-2))`; do
+            ndumpsToRun=$(( $maxdumps > $ndumps ? $ndumps : $maxdumps ))
+
+            for i in `seq $ndumpsToRun`; do
+              dumpi=$((($ndumps / $ndumpsToRun) * $i - 1)) 
+
               # remove any existing files
               find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 
               # copy over the heap dump
-              cp $HOMEdir/dumps/$bc-$i.hprof ${dev_paths[$di]}
-              DUMPFILE=${dev_paths[$di]}/$bc-$i.hprof
+              cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
+              DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
 
               # run fio over the heap dump file
 
-              echo "`date +%F/%H:%M:%S:`: running fio on heapdump $bc-$i"
-              SUBSUBDIR=$SUBDIR/$bc/dump-$i
+              echo "`date +%F/%H:%M:%S:`: running fio on heapdump $bc-$dumpi"
+              SUBSUBDIR=$SUBDIR/$bc/dump-$dumpi
               mkdir -p $SUBSUBDIR
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
