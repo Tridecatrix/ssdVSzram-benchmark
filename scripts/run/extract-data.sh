@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RESULTDIR=data/2025-03-14-time-17-12-08-third-run-limmem-pp
+RESULTDIR=$1
 
 find $RESULTDIR -name system.csv | xargs rm
 find $RESULTDIR -name diskstat.csv | xargs rm
