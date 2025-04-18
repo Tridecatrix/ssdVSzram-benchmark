@@ -10,3 +10,5 @@ filename=${FILE}
 rw=${RW}
 time_based
 runtime=120
+
+; note: this is deprecated because reading from the file multiple times messes up mmaps

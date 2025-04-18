@@ -8,3 +8,5 @@ group_reporting
 allow_file_create=1
 filename=${FILE}
 rw=${RW}
+offset_increment=${SIZE_PER_PROC}
+io_size=${SIZE_PER_PROC}

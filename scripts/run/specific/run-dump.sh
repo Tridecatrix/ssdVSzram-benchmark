@@ -148,8 +148,13 @@ for bs in "${block_sizes[@]}"; do
               SUBSUBDIR=$SUBDIR/$bc/dump-$dumpi
               mkdir -p $SUBSUBDIR
 
+              # get the dump's size (is passed to fio as offset_increment and io_size so that each process only does I/O on a particular
+              # part of the file. Easier than duplicating the file and passing different files to each process.)
+              dumpsize=`du $DUMPFILE -B1 | awk '{print $1}'`
+              sizepp=$(($dumpsize / $nproc))
+
               $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
-              BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+              SIZE_PER_PROC="$sizepp" BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
             done
