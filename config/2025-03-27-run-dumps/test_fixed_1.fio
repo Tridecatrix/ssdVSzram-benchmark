@@ -5,8 +5,10 @@ bs=4096
 ioengine=mmap
 numjobs=8
 group_reporting
-; filename=zrammnt0-lzo/h2-7.hprof
-filename=/mnt/ssd/adnan/bench/h2-7.hprof
+filename=zrammnt0-lzo/h2-7.hprof
+; filename=/mnt/ssd/adnan/bench/h2-7.hprof
 rw=read
 offset_increment=742759424
 io_size=742759424
+; offset_increment=185689856
+; io_size=185689856

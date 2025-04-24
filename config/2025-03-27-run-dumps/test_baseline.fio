@@ -6,7 +6,9 @@ ioengine=mmap
 numjobs=32
 group_reporting
 allow_file_create=1
-;directory=zrammnt0-lzo
-directory=/mnt/ssd/adnan/bench
+directory=zrammnt0-lzo
+;directory=/mnt/ssd/adnan/bench
 rw=read
 size=185689856
+time_based
+runtime=120

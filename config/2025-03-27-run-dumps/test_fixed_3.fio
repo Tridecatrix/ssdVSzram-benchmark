@@ -6,6 +6,8 @@ ioengine=mmap
 numjobs=1
 group_reporting
 rw=read
+time_based
+runtime=120
 
 [job1]
 filename=${LOC}/x00
