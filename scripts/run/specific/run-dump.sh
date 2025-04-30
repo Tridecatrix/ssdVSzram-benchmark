@@ -18,6 +18,9 @@
 testrunopt=""
 outputFormat="json"
 
+extend_dumpfile=true
+extended_dumpfile_size=$((32 * 1024 * 1024 * 1024))
+
 # constants
 HOMEdir=`git rev-parse --show-toplevel`
 
@@ -141,6 +144,27 @@ for bs in "${block_sizes[@]}"; do
               # copy over the heap dump
               cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
               DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
+
+              if [ $extend_dumpfile ]; then
+                echo "extending file"
+
+                EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
+                cp $DUMPFILE $EXTENDEDDUMPFILE
+
+                dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
+                while [[ $dumpsize -lt $extended_dumpfile_size ]]; do
+                  cat $DUMPFILE >> $EXTENDEDDUMPFILE
+                  dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
+                done
+
+                echo "final size after going over required size: $dumpsize"
+                if [[ $dumpsize -gt $extended_dumpfile_size ]]; then
+                  truncate --size=$extended_dumpfile_size $EXTENDEDDUMPFILE
+                fi
+                echo "after truncating: $dumpsize"
+
+                DUMPFILE=$EXTENDEDDUMPFILE
+              fi
 
               # run fio over the heap dump file
 

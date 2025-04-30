@@ -2,11 +2,11 @@
 numa_cpu_nodes=0
 direct=1
 bs=4096
-ioengine=mmap
+ioengine=sync
 numjobs=8
 group_reporting
-filename=zrammnt0-lzo/h2-7.hprof
-; filename=/mnt/ssd/adnan/bench/h2-7.hprof
+; filename=zrammnt0-lzo/h2-7.hprof
+filename=/mnt/ssd/adnan/bench/h2-7.hprof
 rw=read
 offset_increment=742759424
 io_size=742759424
