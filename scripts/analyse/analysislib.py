@@ -7,7 +7,6 @@ import statistics as st
 import os, sys
 import matplotlib.pyplot as plt
 import pandasql as pdsql
-
 # ------------------------------
 # PandaSQL
 # ------------------------------
@@ -165,6 +164,62 @@ def adjust_lightness(color, amount=0.5):
     return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
 
 default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+# Function created by AI; for plotting CPU utilisation stacks for groups of configurations.
+# 
+# Plots a stacked bar chart of CPU utilization metrics grouped by configuration and RWTYPE.
+# Filters for ioengine and numjobs as specified.
+# Bars are sorted by the grouping col and then config col.
+# Adds spacing between config groups.
+def stacked_barplot_cpu_util(df, grouping_col='cdevice', config_col='crw', util_cols=['SYS_UTIL_perc', 'IOW_UTIL_perc', 'USR_UTIL_perc', 'IDL_UTIL_perc'],
+                             ioengine_val='mmap', numjobs_val=32, figsize=(10, 6), colors=None, show=True, group_gap=1):
+    
+    # Filter DataFrame
+    df_filtered = df[(df['cioengine'] == ioengine_val) & (df['cnproc'] == numjobs_val)].copy()
+    
+    # Sort by grouping then config 
+    df_filtered.sort_values([grouping_col, config_col], inplace=True)
+    
+    # Group by grouping column
+    grouped = df_filtered.groupby(grouping_col)
+    group_labels = []
+    util_data = [[] for _ in util_cols]
+    
+    for config, group in grouped:
+        for _, row in group.iterrows():
+            group_labels.append(f"{row[grouping_col]} - {row[config_col]}")
+            for i, col in enumerate(util_cols):
+                util_data[i].append(row[col])
+        # Add gap
+        for _ in range(group_gap):
+            group_labels.append("")
+            for i in range(len(util_cols)):
+                util_data[i].append(0)
+    # Remove trailing gap
+    while group_labels and group_labels[-1] == "":
+        group_labels.pop()
+        for i in range(len(util_cols)):
+            util_data[i].pop()
+    
+    # Set colors if not provided
+    if colors is None:
+        colors = default_colors[:len(util_cols)]
+    
+    # Plot
+    plt.figure(figsize=figsize)
+    bottom = np.zeros(len(group_labels))
+    for i, (col, color) in enumerate(zip(util_cols, colors)):
+        plt.bar(group_labels, util_data[i], bottom=bottom, label=col, color=color)
+        bottom += util_data[i]
+    
+    plt.xlabel(f'{grouping_col} - {config_col}')
+    plt.ylabel('Utilization (%)')
+    plt.title(f'CPU Utilization Breakdown (ioengine={ioengine_val}, numjobs={numjobs_val})')
+    plt.legend()
+    plt.xticks(rotation=30, ha='right')
+    plt.tight_layout()
+    if show:
+        plt.show()
 
 # -----------------------------
 # Misc
