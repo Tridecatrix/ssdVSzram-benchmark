@@ -151,21 +151,8 @@ def grouped_barplot_flat(xs, ys, roworder=True, **kwargs):
     yss = unflatten_ys(xs, ys, roworder)
     grouped_barplot(xs, yss, **kwargs)
 
-
-# Given a hex color, adjust its brightness
-def adjust_lightness(color, amount=0.5):
-    import matplotlib.colors as mc
-    import colorsys
-    try:
-        c = mc.cnames[color]
-    except:
-        c = color
-    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
-    return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
-
-default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-
 # Function created by AI; for plotting CPU utilisation stacks for groups of configurations.
+# The default parameters fit the tables used for 2025 honours project.
 # 
 # Plots a stacked bar chart of CPU utilization metrics grouped by configuration and RWTYPE.
 # Filters for ioengine and numjobs as specified.
@@ -220,6 +207,36 @@ def stacked_barplot_cpu_util(df, grouping_col='cdevice', config_col='crw', util_
     plt.tight_layout()
     if show:
         plt.show()
+
+# ------------------------------
+# Colors
+# ------------------------------
+
+# Given a hex color, adjust its brightness
+def adjust_lightness(color, amount=0.5):
+    import matplotlib.colors as mc
+    import colorsys
+    try:
+        c = mc.cnames[color]
+    except:
+        c = color
+    c = colorsys.rgb_to_hls(*mc.to_rgb(c))
+    return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
+
+default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+pastel_colors = [
+    "#AEC6CF",  # pastel blue
+    "#FFB347",  # pastel orange
+    "#B39EB5",  # pastel purple
+    "#77DD77",  # pastel green
+    "#FFD1DC",  # pastel pink
+    "#FFFACD",  # pastel yellow
+    "#CFCFC4",  # pastel gray
+    "#F49AC2",  # pastel magenta
+    "#B0E0E6",  # pastel turquoise
+    "#E6E6FA",  # pastel lavender
+]
 
 # -----------------------------
 # Misc
