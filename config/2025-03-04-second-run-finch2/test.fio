@@ -1,0 +1,11 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=4096
+ioengine=mmap
+size=1G
+numjobs=32
+group_reporting
+allow_file_create=1
+directory=${DIR}
+rw=read
