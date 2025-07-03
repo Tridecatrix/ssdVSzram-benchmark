@@ -1,12 +1,13 @@
 [job]
 numa_cpu_nodes=0
-direct=1
-bs=4096
-ioengine=mmap
-size=512M
-numjobs=64
+direct=0
+bs=4K
+ioengine=sync
+size=8G
+numjobs=1
 group_reporting
 allow_file_create=1
+; directory=./zrammnt0-lzo
 directory=/mnt/ssd/adnan/bench
 rw=read
-cgroup=memlim/16M
+pre_read=1

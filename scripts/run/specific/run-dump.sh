@@ -42,6 +42,7 @@ sync_ioengines=("mmap")
 
 # dacapo benchmarks
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs="h2"
 dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
@@ -145,7 +146,7 @@ for bs in "${block_sizes[@]}"; do
               cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
               DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
 
-              if [ $extend_dumpfile ]; then
+              if [ "$extend_dumpfile" = true ]; then
                 echo "extending file"
 
                 EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof

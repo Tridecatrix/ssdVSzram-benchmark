@@ -1,0 +1,15 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=4K
+ioengine=mmap
+numjobs=1
+rw=randread
+; offset_increment=255274368
+; io_size=255274368
+; filename=zrammnt0-lzo/h2-39.hprof
+; filename=zrammnt0-lzo/job.0.0
+; filename=/mnt/ssd/adnan/bench/h2-39.hprof
+filename=/mnt/ssd/adnan/bench/job.0.0
+; invalidate=0
+io_size=10G

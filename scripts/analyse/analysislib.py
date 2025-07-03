@@ -1,12 +1,25 @@
 # Common functions for data analysis, including graph creation and number processing.
 # Mainly created these when existing libraries don't have what I want for some reason.
 
+# Commands to set up running this library from directory root:
+'''
+import pandasql as pdsql
+import sys
+
+sys.path.append("scripts/analyse")
+import analysislib as alib
+
+sq = lambda q: pdsql.sqldf(q, globals())
+sqflat = lambda q: alib.flatten(pdsql.sqldf(q, globals()).values.tolist())
+'''
+
 import numpy as np
 import pandas as pd
 import statistics as st
 import os, sys
 import matplotlib.pyplot as plt
 import pandasql as pdsql
+
 # ------------------------------
 # PandaSQL
 # ------------------------------

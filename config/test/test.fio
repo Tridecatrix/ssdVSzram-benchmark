@@ -1,0 +1,13 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=4K
+ioengine=mmap
+numjobs=32
+group_reporting
+; allow_file_create=1
+; filename=zrammnt0-lzo/h2-39.hprof
+filename=zrammnt0-lzo/job.0.0
+rw=randread
+offset_increment=243M
+io_size=243M
