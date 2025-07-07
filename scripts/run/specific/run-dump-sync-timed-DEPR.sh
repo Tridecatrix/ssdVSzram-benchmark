@@ -25,10 +25,15 @@ extended_dumpfile_size=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
-dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+# dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
+# dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+# dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+# dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+
+dev_names=("zram0")
+dev_paths=("$HOMEdir/zrammnt0-lzo")
+dev_names_sys=("/dev/zram0")
+dev_names_iostat=("zram0")
 
 # config file paths
 sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync-timed.fio"
@@ -41,11 +46,12 @@ rws=("read" "randread")
 sync_ioengines=("sync")
 
 # dacapo benchmarks
-dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+dacapo_benchs="spring"
 dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
-maxdumps=5
+maxdumps=2
 
 EXPNAME=fourth-run-dumps
 

@@ -30,8 +30,14 @@ dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zst
 dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
-# config file paths
-sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
+# NOTE: below can be used if we just want to run a smaller test
+# dev_names=("zram0")
+# dev_paths=("$HOMEdir/zrammnt0-lzo")
+# dev_names_sys=("/dev/zram0")
+# dev_names_iostat=("zram0")
+
+# # config file paths
+# sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
 
 # options for other fio variables
 block_sizes=(4096)
@@ -42,11 +48,15 @@ sync_ioengines=("mmap")
 
 # dacapo benchmarks
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
-# dacapo_benchs="h2"
 dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
+
+# NOTE: below can be used if we just want to run a smaller test
+# dacapo_benchs="avrora"
+# dacapo_benchs=($dacapo_benchs)
+# maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -108,6 +118,8 @@ echo "Read/write type options: ${rws[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Async I/O engines: ${async_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -146,7 +158,7 @@ for bs in "${block_sizes[@]}"; do
               cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
               DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
 
-              if [ "$extend_dumpfile" = true ]; then
+              if $extend_dumpfile; then
                 echo "extending file"
 
                 EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
@@ -154,8 +166,12 @@ for bs in "${block_sizes[@]}"; do
 
                 dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
                 while [[ $dumpsize -lt $extended_dumpfile_size ]]; do
+                  # repeatedly extend
                   cat $DUMPFILE >> $EXTENDEDDUMPFILE
+
                   dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
+
+                  echo "Current size in bytes: $dumpsize"
                 done
 
                 echo "final size after going over required size: $dumpsize"
@@ -176,7 +192,8 @@ for bs in "${block_sizes[@]}"; do
               # get the dump's size (is passed to fio as offset_increment and io_size so that each process only does I/O on a particular
               # part of the file. Easier than duplicating the file and passing different files to each process.)
               dumpsize=`du $DUMPFILE -B1 | awk '{print $1}'`
-              sizepp=$(($dumpsize / $nproc))
+              # sizepp=$(($dumpsize / $nproc))
+              sizepp=$(((($dumpsize / $nproc) / $bs) * $bs)) # set size to be aligned to block size
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
               SIZE_PER_PROC="$sizepp" BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt

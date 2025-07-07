@@ -3,6 +3,7 @@
 
 # Commands to set up running this library from directory root:
 '''
+import pandas as pd
 import pandasql as pdsql
 import sys
 
