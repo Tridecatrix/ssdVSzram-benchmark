@@ -8,97 +8,97 @@ group_reporting
 rw=${RW}
 
 [job1]
-filename=${LOC}/se00
+filename=${LOC}/${FPREFIX}00.hprof
 
 [job2]
-filename=${LOC}/se01
+filename=${LOC}/${FPREFIX}01.hprof
 
 [job3]
-filename=${LOC}/se02
+filename=${LOC}/${FPREFIX}02.hprof
 
 [job4]
-filename=${LOC}/se03
+filename=${LOC}/${FPREFIX}03.hprof
 
 [job5]
-filename=${LOC}/se04
+filename=${LOC}/${FPREFIX}04.hprof
 
 [job6]
-filename=${LOC}/se05
+filename=${LOC}/${FPREFIX}05.hprof
 
 [job7]
-filename=${LOC}/se06
+filename=${LOC}/${FPREFIX}06.hprof
 
 [job8]
-filename=${LOC}/se07
+filename=${LOC}/${FPREFIX}07.hprof
 
 [job9]
-filename=${LOC}/se08
+filename=${LOC}/${FPREFIX}08.hprof
 
 [job10]
-filename=${LOC}/se09
+filename=${LOC}/${FPREFIX}09.hprof
 
 [job11]
-filename=${LOC}/se10
+filename=${LOC}/${FPREFIX}10.hprof
 
 [job12]
-filename=${LOC}/se11
+filename=${LOC}/${FPREFIX}11.hprof
 
 [job13]
-filename=${LOC}/se12
+filename=${LOC}/${FPREFIX}12.hprof
 
 [job14]
-filename=${LOC}/se13
+filename=${LOC}/${FPREFIX}13.hprof
 
 [job15]
-filename=${LOC}/se14
+filename=${LOC}/${FPREFIX}14.hprof
 
 [job16]
-filename=${LOC}/se15
+filename=${LOC}/${FPREFIX}15.hprof
 
 [job17]
-filename=${LOC}/se16
+filename=${LOC}/${FPREFIX}16.hprof
 
 [job18]
-filename=${LOC}/se17
+filename=${LOC}/${FPREFIX}17.hprof
 
 [job19]
-filename=${LOC}/se18
+filename=${LOC}/${FPREFIX}18.hprof
 
 [job20]
-filename=${LOC}/se19
+filename=${LOC}/${FPREFIX}19.hprof
 
 [job21]
-filename=${LOC}/se20
+filename=${LOC}/${FPREFIX}20.hprof
 
 [job22]
-filename=${LOC}/se21
+filename=${LOC}/${FPREFIX}21.hprof
 
 [job23]
-filename=${LOC}/se22
+filename=${LOC}/${FPREFIX}22.hprof
 
 [job24]
-filename=${LOC}/se23
+filename=${LOC}/${FPREFIX}23.hprof
 
 [job25]
-filename=${LOC}/se24
+filename=${LOC}/${FPREFIX}24.hprof
 
 [job26]
-filename=${LOC}/se25
+filename=${LOC}/${FPREFIX}25.hprof
 
 [job27]
-filename=${LOC}/se26
+filename=${LOC}/${FPREFIX}26.hprof
 
 [job28]
-filename=${LOC}/se27
+filename=${LOC}/${FPREFIX}27.hprof
 
 [job29]
-filename=${LOC}/se28
+filename=${LOC}/${FPREFIX}28.hprof
 
 [job30]
-filename=${LOC}/se29
+filename=${LOC}/${FPREFIX}29.hprof
 
 [job31]
-filename=${LOC}/se30
+filename=${LOC}/${FPREFIX}30.hprof
 
 [job32]
-filename=${LOC}/se31
+filename=${LOC}/${FPREFIX}31.hprof

@@ -168,7 +168,7 @@ for bs in "${block_sizes[@]}"; do
               mkdir -p $SUBDIR
 
               # get size of data read by each process (single file is partitioned across the processes)
-              dumpsize=`du $DUMPFILE -B1 | awk '{print $1}'`
+              dumpsize=`stat --format=%s $DUMPFILE`
               sizepp=$(((($dumpsize / $nproc) / $bs) * $bs)) # set size to be aligned to block size
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR

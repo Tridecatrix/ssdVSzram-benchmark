@@ -15,7 +15,7 @@ fname=$(basename $INFILE)
 ext="${fname##*.}"
 fname="${fname%.*}" # remove extension
 
-split -n $NP -d $INFILE $OUTDIR/$fname- --additional-suffix=-$ext
+split -n $NP -d $INFILE $OUTDIR/$fname- --additional-suffix=.$ext
 
 # Call extend-file.sh on each split file in parallel
 for i in $(seq -f "%02g" 0 $((NP-1))); do

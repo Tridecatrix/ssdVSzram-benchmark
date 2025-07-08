@@ -39,15 +39,15 @@ rws=("read" "randread")
 sync_ioengines=("mmap" "sync")
 
 # dacapo benchmarks
-dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
-dacapo_benchs=($dacapo_benchs)
+# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
 
-# dacapo_benchs="h2"
-# dacapo_benchs=($dacapo_benchs)
-# maxdumps=2
+dacapo_benchs="h2"
+dacapo_benchs=($dacapo_benchs)
+maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -135,8 +135,7 @@ for di in "${!dev_names[@]}"; do
     for i in $(seq $ndumpsToRun); do
       dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
 
-      echo "time: $(date +%F/%H:%M:%S)"
-      echo "Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
+      echo "$(date +%F/%H:%M:%S) Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
 
       # 1. Remove any existing files for this device
       echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
@@ -160,11 +159,11 @@ for di in "${!dev_names[@]}"; do
               mkdir -p $SUBDIR
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$bc-$dumpi-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
-              echo "$(date +%F/%H:%M:%S) done"
+              echo "$(date +%F/%H:%M:%S) Done"
               echo ""
             done
           done
@@ -174,6 +173,7 @@ for di in "${!dev_names[@]}"; do
       # 4. Remove the split/extended files before next dump
       echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
       find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      echo ""
     done
   done
 done

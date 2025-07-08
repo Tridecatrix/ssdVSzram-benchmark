@@ -7,7 +7,7 @@ NEWSIZE=$3
 # echo "extending file"
 cp $ORIGFILE $EXTFILE
 
-SIZE=`du $EXTFILE -B1 | awk '{print $1}'`
+SIZE=`stat --format=%s $EXTFILE`
 while [[ $SIZE -lt $NEWSIZE ]]; do
     cat $ORIGFILE >> $EXTFILE
 
@@ -16,7 +16,7 @@ while [[ $SIZE -lt $NEWSIZE ]]; do
         exit 1
     fi
 
-    SIZE=`du $EXTFILE -B1 | awk '{print $1}'`
+    SIZE=`stat --format=%s $EXTFILE`
     # echo "current size: $SIZE"
 done
 
