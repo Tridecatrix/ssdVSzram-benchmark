@@ -126,38 +126,35 @@ echo ""
 echo "beginning runs"
 echo ""
 
-for bs in "${block_sizes[@]}"; do
-  for nproc in "${nprocs[@]}"; do
-    for rw in "${rws[@]}"; do
-      for ioengine in "${sync_ioengines[@]}"; do
-        for di in "${!dev_names[@]}"; do
-          for bc in "${dacapo_benchs[@]}"; do
+for di in "${!dev_names[@]}"; do
+  for bc in "${dacapo_benchs[@]}"; do
+    echo "==================== $(date +%F/%H:%M:%S) Starting benchmark $bc on device ${dev_names[$di]} ===================="
+    ndumps=$(find $HOMEdir/dumps -name $bc-*.hprof | wc -l)
+    ndumpsToRun=$(( maxdumps > ndumps ? ndumps : maxdumps ))
 
-            ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
-            ndumpsToRun=$(( $maxdumps > $ndumps ? $ndumps : $maxdumps ))
+    for i in $(seq $ndumpsToRun); do
+      dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
 
-            for i in `seq $ndumpsToRun`; do
-              ######################################### 
-              # MAIN RUN LOOP NEST BEGINS HERE
-              #########################################
+      echo "time: $(date +%F/%H:%M:%S)"
+      echo "Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
 
-              dumpi=$((($ndumps / $ndumpsToRun) * $i - 1)) 
+      # 1. Remove any existing files for this device
+      echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
+      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 
-              echo "time: `date +%F/%H:%M:%S`"
-              echo "running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]}"
-              echo "running on heapdump $bc-$dumpi"
+      # 2. Split and extend the heap dump
+      echo "$(date +%F/%H:%M:%S) Splitting and extending file"
+      $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
+      echo "$(date +%F/%H:%M:%S) Calling sync"
+      sync ${dev_paths[$di]}/*
 
-              # 1. remove any existing files
-              find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      # 3. Run all config combinations on the prepared files
+      for bs in "${block_sizes[@]}"; do
+        for nproc in "${nprocs[@]}"; do
+          for rw in "${rws[@]}"; do
+            for ioengine in "${sync_ioengines[@]}"; do
 
-              # 2. split heap dump into 32 files, then extend each one to 1 GB
-              echo "splitting and extending file"
-              $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32)) # call script
-              echo "calling sync"
-              sync ${dev_paths[$di]}/* # important!
-
-              # 3. run fio, along with statistics trackers (mpstat, iostat)
-              echo "running fio"
+              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"
 
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
@@ -167,16 +164,16 @@ for bs in "${block_sizes[@]}"; do
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
-              echo "done"
+              echo "$(date +%F/%H:%M:%S) done"
               echo ""
-
-              ######################################### 
-              # MAIN RUN LOOP NEST ENDS HERE
-              #########################################
             done
           done
         done
       done
+
+      # 4. Remove the split/extended files before next dump
+      echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
+      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
     done
   done
 done
