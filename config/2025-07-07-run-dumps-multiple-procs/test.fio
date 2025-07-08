@@ -1,0 +1,17 @@
+[global]
+numa_cpu_nodes=0
+direct=1
+bs=4096
+ioengine=mmap
+numjobs=1
+group_reporting
+rw=randread
+
+[job1]
+filename=zrammnt0-lzo/x00
+
+[job2]
+filename=zrammnt0-lzo/x01
+
+[job3]
+filename=zrammnt0-lzo/x02

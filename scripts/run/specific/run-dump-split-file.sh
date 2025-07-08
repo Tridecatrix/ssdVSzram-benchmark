@@ -31,21 +31,24 @@ dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
+sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 
 # options for other fio variables
 block_sizes=(4096)
 nprocs=(32)
-#rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 rws=("read" "randread")
-sync_ioengines=("mmap")
+sync_ioengines=("mmap" "sync")
 
-# dacapo benchmarks
-dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# # dacapo benchmarks
+# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs=($dacapo_benchs)
+
+# # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
+# maxdumps=5
+
+dacapo_benchs="h2"
 dacapo_benchs=($dacapo_benchs)
-
-# max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
-maxdumps=5
+maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -109,6 +112,7 @@ echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
+echo "Run script: run-dump-split-file.sh ()"
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -156,24 +160,39 @@ for bs in "${block_sizes[@]}"; do
                 echo "extending file"
 
                 EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
+                cp $DUMPFILE $EXTENDEDDUMPFILE
 
-                $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size
+                dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
+                while [[ $dumpsize -lt $extended_dumpfile_size ]]; do
+                  # repeatedly extend
+                  cat $DUMPFILE >> $EXTENDEDDUMPFILE
+
+                  dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
+
+                  echo "current size in bytes: $dumpsize"
+                done
+
+                echo "final size after going over required size: $dumpsize"
+                if [[ $dumpsize -gt $extended_dumpfile_size ]]; then
+                  truncate --size=$extended_dumpfile_size $EXTENDEDDUMPFILE
+                fi
+                echo "after truncating: $dumpsize"
 
                 DUMPFILE=$EXTENDEDDUMPFILE
               fi
 
-              # 4. run fio over the heap dump file
+              # 4. split the dump file into pieces for each process
+              echo "splitting file"
+              split -n 32 -d $DUMPFILE ${dev_paths[$di]}/x
 
+              # 5. run fio, along with statistics trackers (mpstat, iostat)
               echo "running fio"
+
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
 
-              # get size of data read by each process (single file is partitioned across the processes)
-              dumpsize=`du $DUMPFILE -B1 | awk '{print $1}'`
-              sizepp=$(((($dumpsize / $nproc) / $bs) * $bs)) # set size to be aligned to block size
-
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              SIZE_PER_PROC="$sizepp" BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt --bandwidth-log
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 

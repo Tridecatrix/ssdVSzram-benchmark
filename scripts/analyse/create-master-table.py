@@ -111,7 +111,7 @@ metrics = {
 } # TODO: add more metrics
 
 paramDefaults = {
-    "bSize": 4096,
+    "bs": 4096,
     "iodepth": 1,
     "rw": "read",
     "nproc": 1,

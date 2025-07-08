@@ -18,8 +18,7 @@
 testrunopt=""
 outputFormat="json"
 
-extend_dumpfile=true
-extended_dumpfile_size=$((32 * 1024 * 1024 * 1024))
+totalfilesize=$((32 * 1024 * 1024 * 1024))
 
 # constants
 HOMEdir=`git rev-parse --show-toplevel`
@@ -31,14 +30,13 @@ dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
+sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 
 # options for other fio variables
 block_sizes=(4096)
 nprocs=(32)
-#rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 rws=("read" "randread")
-sync_ioengines=("mmap")
+sync_ioengines=("mmap" "sync")
 
 # dacapo benchmarks
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
@@ -46,6 +44,10 @@ dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
+
+# dacapo_benchs="h2"
+# dacapo_benchs=($dacapo_benchs)
+# maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -109,6 +111,7 @@ echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
+echo "Run script: run-dump-split-file.sh"
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -147,33 +150,19 @@ for bs in "${block_sizes[@]}"; do
               # 1. remove any existing files
               find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 
-              # 2. copy over the heap dump
-              cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
-              DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
+              # 2. split heap dump into 32 files, then extend each one to 1 GB
+              echo "splitting and extending file"
+              $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
+              sync ${dev_paths[$di]}/*
 
-              # 3. extend/truncate the heap dump to the desired size (32 GB by default)
-              if $extend_dumpfile; then
-                echo "extending file"
-
-                EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
-
-                $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size
-
-                DUMPFILE=$EXTENDEDDUMPFILE
-              fi
-
-              # 4. run fio over the heap dump file
-
+              # 3. run fio, along with statistics trackers (mpstat, iostat)
               echo "running fio"
+
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
 
-              # get size of data read by each process (single file is partitioned across the processes)
-              dumpsize=`du $DUMPFILE -B1 | awk '{print $1}'`
-              sizepp=$(((($dumpsize / $nproc) / $bs) * $bs)) # set size to be aligned to block size
-
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              SIZE_PER_PROC="$sizepp" BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt --bandwidth-log
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
