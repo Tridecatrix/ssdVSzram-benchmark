@@ -158,32 +158,15 @@ for bs in "${block_sizes[@]}"; do
               # 3. extend/truncate the heap dump to the desired size (32 GB by default)
               if $extend_dumpfile; then
                 echo "extending file"
-
                 EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
-                cp $DUMPFILE $EXTENDEDDUMPFILE
-
-                dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
-                while [[ $dumpsize -lt $extended_dumpfile_size ]]; do
-                  # repeatedly extend
-                  cat $DUMPFILE >> $EXTENDEDDUMPFILE
-
-                  dumpsize=`du $EXTENDEDDUMPFILE -B1 | awk '{print $1}'`
-
-                  echo "current size in bytes: $dumpsize"
-                done
-
-                echo "final size after going over required size: $dumpsize"
-                if [[ $dumpsize -gt $extended_dumpfile_size ]]; then
-                  truncate --size=$extended_dumpfile_size $EXTENDEDDUMPFILE
-                fi
-                echo "after truncating: $dumpsize"
-
+                $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size # call script
                 DUMPFILE=$EXTENDEDDUMPFILE
               fi
 
               # 4. split the dump file into pieces for each process
               echo "splitting file"
               split -n 32 -d $DUMPFILE ${dev_paths[$di]}/x
+              sync ${dev_paths[$di]}/* # important!
 
               # 5. run fio, along with statistics trackers (mpstat, iostat)
               echo "running fio"

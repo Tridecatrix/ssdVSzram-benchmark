@@ -152,8 +152,8 @@ for bs in "${block_sizes[@]}"; do
 
               # 2. split heap dump into 32 files, then extend each one to 1 GB
               echo "splitting and extending file"
-              $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
-              sync ${dev_paths[$di]}/*
+              $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32)) # call script
+              sync ${dev_paths[$di]}/* # important!
 
               # 3. run fio, along with statistics trackers (mpstat, iostat)
               echo "running fio"

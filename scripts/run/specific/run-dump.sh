@@ -154,13 +154,11 @@ for bs in "${block_sizes[@]}"; do
               # 3. extend/truncate the heap dump to the desired size (32 GB by default)
               if $extend_dumpfile; then
                 echo "extending file"
-
                 EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
-
                 $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size
-
                 DUMPFILE=$EXTENDEDDUMPFILE
               fi
+              sync $DUMPFILE # important!
 
               # 4. run fio over the heap dump file
 
