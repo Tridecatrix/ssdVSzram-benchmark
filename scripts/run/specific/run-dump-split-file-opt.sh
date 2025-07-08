@@ -45,9 +45,9 @@ dacapo_benchs=($dacapo_benchs)
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
 
-# dacapo_benchs="h2"
-# dacapo_benchs=($dacapo_benchs)
-# maxdumps=2
+dacapo_benchs="h2"
+dacapo_benchs=($dacapo_benchs)
+maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -111,7 +111,7 @@ echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
-echo "Run script: run-dump-split-file.sh"
+echo "Run script: run-dump-split-file-opt.sh"
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -153,6 +153,7 @@ for bs in "${block_sizes[@]}"; do
               # 2. split heap dump into 32 files, then extend each one to 1 GB
               echo "splitting and extending file"
               $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32)) # call script
+              echo "calling sync"
               sync ${dev_paths[$di]}/* # important!
 
               # 3. run fio, along with statistics trackers (mpstat, iostat)

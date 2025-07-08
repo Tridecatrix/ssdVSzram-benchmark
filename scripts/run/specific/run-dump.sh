@@ -158,6 +158,7 @@ for bs in "${block_sizes[@]}"; do
                 $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size
                 DUMPFILE=$EXTENDEDDUMPFILE
               fi
+              echo "calling sync"
               sync $DUMPFILE # important!
 
               # 4. run fio over the heap dump file

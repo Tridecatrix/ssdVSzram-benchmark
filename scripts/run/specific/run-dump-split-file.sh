@@ -36,8 +36,8 @@ sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 # options for other fio variables
 block_sizes=(4096)
 nprocs=(32)
-rws=("read" "randread")
-sync_ioengines=("mmap" "sync")
+rws=("randread")
+sync_ioengines=("mmap")
 
 # # dacapo benchmarks
 # dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
@@ -48,7 +48,7 @@ sync_ioengines=("mmap" "sync")
 
 dacapo_benchs="h2"
 dacapo_benchs=($dacapo_benchs)
-maxdumps=2
+maxdumps=1
 
 EXPNAME=fourth-run-dumps
 
@@ -166,6 +166,7 @@ for bs in "${block_sizes[@]}"; do
               # 4. split the dump file into pieces for each process
               echo "splitting file"
               split -n 32 -d $DUMPFILE ${dev_paths[$di]}/x
+              echo "calling sync"
               sync ${dev_paths[$di]}/* # important!
 
               # 5. run fio, along with statistics trackers (mpstat, iostat)
