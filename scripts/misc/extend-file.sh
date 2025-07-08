@@ -5,12 +5,17 @@ EXTFILE=$2
 NEWSIZE=$3
 
 # echo "extending file"
-
 cp $ORIGFILE $EXTFILE
 
 SIZE=`du $EXTFILE -B1 | awk '{print $1}'`
 while [[ $SIZE -lt $NEWSIZE ]]; do
     cat $ORIGFILE >> $EXTFILE
+
+    if [[ $? -ne 0 ]]; then
+        echo "Error extending file"
+        exit 1
+    fi
+
     SIZE=`du $EXTFILE -B1 | awk '{print $1}'`
     # echo "current size: $SIZE"
 done
