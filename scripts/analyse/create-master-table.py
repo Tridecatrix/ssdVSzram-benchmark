@@ -56,7 +56,7 @@ diskstatCSVs = {} # dictionary mapping cnames in configNames to a PD dataframe c
 for subdirpath, subsubdirs, subfiles in os.walk(resultsDir):
     if "fio_out.txt" in subfiles:
         cpath = os.path.normpath(subdirpath)
-        cname = cpath[len(resultsDir):].replace("\\", "‐")
+        cname = cpath[len(resultsDir):].replace("\\", "-")
         configNames.append(cname)
         configPaths[cname] = cpath
 
@@ -111,7 +111,7 @@ metrics = {
 } # TODO: add more metrics
 
 paramDefaults = {
-    "bs": 4096,
+    "bSize": 4096,
     "iodepth": 1,
     "rw": "read",
     "nproc": 1,
@@ -157,7 +157,16 @@ mTable = []
 for cname, cjson in allDataJson.items():
     mRow = {}
 
-    cjson = cjson["jobs"][0]
+    if "global options" in cjson:
+        # add global options to the job options part of the dictionary
+        globopt = cjson["global options"] 
+        cjson = cjson["jobs"][0]
+        for opt in globopt.keys():
+            cjson["job options"][opt] = globopt[opt]
+    else:
+        # just extract the dict for job 0 (when fio setting group_reporting is set, this contains all of the data)
+        cjson = cjson["jobs"][0]
+
     for colname, colpath in columns.items():
         if colpath == "special":
 
@@ -181,6 +190,13 @@ for cname, cjson in allDataJson.items():
             if colname == "cfile":
                 if "filename" in cjson["job options"]:
                     value = cjson["job options"]["filename"].split("/")[-1]
+
+                    # note: this is a bad workaround for case where the heap dump is split, because I did not take care
+                    # in my run script to ensure that the split files had names that were connected to the original heap
+                    # dump's name. 
+                    if (value.startswith("se")):
+                        mRow["cdumpbc"] = cname.split("-")[-3]
+                        mRow["cdumpno"] = cname.split("-")[-1]
 
                     # if it a heap dump, add seperate additional columns with the name of the benchmark
                     if (value.endswith("hprof")):
