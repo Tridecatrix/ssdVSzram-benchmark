@@ -45,9 +45,9 @@ dacapo_benchs=($dacapo_benchs)
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
 
-dacapo_benchs="h2"
-dacapo_benchs=($dacapo_benchs)
-maxdumps=2
+# dacapo_benchs="h2"
+# dacapo_benchs=($dacapo_benchs)
+# maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
