@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/specific/run-dump.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-dump-split-file-opt.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-dump.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-dump-split-file-opt.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 
 # ----------------------------------
 # parameters

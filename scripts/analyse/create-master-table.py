@@ -191,9 +191,8 @@ for cname, cjson in allDataJson.items():
                 if "filename" in cjson["job options"]:
                     value = cjson["job options"]["filename"].split("/")[-1]
 
-                    # note: this is a bad workaround for case where the heap dump is split, because I did not take care
-                    # in my run script to ensure that the split files had names that were connected to the original heap
-                    # dump's name. 
+                    # note: this is a workaround specifically for experiment 07/07 because I forgot to retain the
+                    # name of the benchmark in the initial split-dumps version of the experiment for that
                     if (value.startswith("se")):
                         mRow["cdumpbc"] = cname.split("-")[-3]
                         mRow["cdumpno"] = cname.split("-")[-1]
