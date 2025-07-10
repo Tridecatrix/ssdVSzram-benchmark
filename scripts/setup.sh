@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # run this script with sudo, or copypaste commands from here. run from repo root directory.
 # if you only want to set up ZRAM, run setup-zram.sh
 
@@ -8,7 +10,14 @@ git submodule update --init system_util
 
 # install dependencies
 apt install fio
-pip install matplotlib
+
+# for using the python scripts, you should also have the following python modules for quick analysis:
+# - pandas
+# - pandasql
+# and the following for more complex analysis:
+# - matplotlib
+# - anything else imported by the scripts given
+# I'd put the pip install commands for these here but you may be wanting to use a different package manager
 
 ./scripts/setup-zram.sh
 
