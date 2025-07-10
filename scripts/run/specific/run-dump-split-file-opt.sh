@@ -39,17 +39,17 @@ rws=("read" "randread")
 sync_ioengines=("mmap" "sync")
 
 # dacapo benchmarks
-# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
-# dacapo_benchs=($dacapo_benchs)
+dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
 
-dacapo_benchs="h2"
-dacapo_benchs=($dacapo_benchs)
-maxdumps=2
+# dacapo_benchs="h2"
+# dacapo_benchs=($dacapo_benchs)
+# maxdumps=2
 
-EXPNAME=fourth-run-dumps
+EXPNAME=fourth-run-dumps-part-2
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
