@@ -11,6 +11,8 @@ if [[ ! -z `find dumps -name *.hprof` ]]; then
     exit
 fi
 
+mkdir -p dumps
+
 for b in `java -jar dacapo.jar -l`; do
     java -jar dacapo.jar $b -s large &
     JVMPID=$!
