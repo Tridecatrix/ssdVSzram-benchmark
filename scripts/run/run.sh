@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/run.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -24,23 +24,23 @@ HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
 dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_paths=("/mnt/ssd0/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
 dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
-async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
+sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
+async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
-block_sizes=(4096)
-nprocs=(64)
-iodepths=(128)
+block_sizes=(4096 65536)
+nprocs=(32 64)
+iodepths=(128 2056)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=compression-alg
+EXPNAME=raven3-benchmark
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
@@ -54,11 +54,11 @@ cd $HOMEdir
 # assert that nobody else is on the machine
 # - note: based on how you're running the script, you may count as one of the users outputted as who;
 #   in this case update below comparison to "$(($nusers-1)) -gt 0"
-nusers=`who | wc -l`
-if [[ $nusers -gt 0 ]]; then
-  echo "Detected $nusers other users on the machine; aborting"
-  exit
-fi
+# nusers=`who | wc -l`
+# if [[ $nusers -gt 0 ]]; then
+#   echo "Detected $nusers other users on the machine; aborting"
+#   exit
+# fi
 
 # TODO: add check that no other processes are running
 # - maybe filter output of top for processes with above 50% utilisation

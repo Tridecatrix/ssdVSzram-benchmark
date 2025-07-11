@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/specific/run-dump.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-dump-split-file-opt.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-dump.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-dump-split-file-opt.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -18,8 +18,7 @@
 testrunopt=""
 outputFormat="json"
 
-extend_dumpfile=true
-extended_dumpfile_size=$((32 * 1024 * 1024 * 1024))
+totalfilesize=$((32 * 1024 * 1024 * 1024))
 
 # constants
 HOMEdir=`git rev-parse --show-toplevel`
@@ -31,21 +30,24 @@ dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to
 dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-03-27-run-dumps/sync.fio"
+sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 
 # options for other fio variables
 block_sizes=(4096)
 nprocs=(32)
-#rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 rws=("read" "randread")
-sync_ioengines=("mmap")
+sync_ioengines=("mmap" "sync")
 
 # dacapo benchmarks
-dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
-dacapo_benchs=($dacapo_benchs)
+# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=5
+
+dacapo_benchs="h2"
+dacapo_benchs=($dacapo_benchs)
+maxdumps=2
 
 EXPNAME=fourth-run-dumps
 
@@ -109,6 +111,7 @@ echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
+echo "Run script: run-dump-split-file-opt.sh"
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -123,69 +126,54 @@ echo ""
 echo "beginning runs"
 echo ""
 
-for bs in "${block_sizes[@]}"; do
-  for nproc in "${nprocs[@]}"; do
-    for rw in "${rws[@]}"; do
-      for ioengine in "${sync_ioengines[@]}"; do
-        for di in "${!dev_names[@]}"; do
-          for bc in "${dacapo_benchs[@]}"; do
+for di in "${!dev_names[@]}"; do
+  for bc in "${dacapo_benchs[@]}"; do
+    echo "==================== $(date +%F/%H:%M:%S) Starting benchmark $bc on device ${dev_names[$di]} ===================="
+    ndumps=$(find $HOMEdir/dumps -name $bc-*.hprof | wc -l)
+    ndumpsToRun=$(( maxdumps > ndumps ? ndumps : maxdumps ))
 
-            ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
-            ndumpsToRun=$(( $maxdumps > $ndumps ? $ndumps : $maxdumps ))
+    for i in $(seq $ndumpsToRun); do
+      dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
 
-            for i in `seq $ndumpsToRun`; do
-              ######################################### 
-              # MAIN RUN LOOP NEST BEGINS HERE
-              #########################################
+      echo "$(date +%F/%H:%M:%S) Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
 
-              dumpi=$((($ndumps / $ndumpsToRun) * $i - 1)) 
+      # 1. Remove any existing files for this device
+      echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
+      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
 
-              echo "time: `date +%F/%H:%M:%S`"
-              echo "running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]}"
-              echo "running on heapdump $bc-$dumpi"
+      # 2. Split and extend the heap dump
+      echo "$(date +%F/%H:%M:%S) Splitting and extending file"
+      $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
+      echo "$(date +%F/%H:%M:%S) Calling sync"
+      sync ${dev_paths[$di]}/*
 
-              # 1. remove any existing files
-              find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      # 3. Run all config combinations on the prepared files
+      for bs in "${block_sizes[@]}"; do
+        for nproc in "${nprocs[@]}"; do
+          for rw in "${rws[@]}"; do
+            for ioengine in "${sync_ioengines[@]}"; do
 
-              # 2. copy over the heap dump
-              cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
-              DUMPFILE=${dev_paths[$di]}/$bc-$dumpi.hprof
+              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"
 
-              # 3. extend/truncate the heap dump to the desired size (32 GB by default)
-              if $extend_dumpfile; then
-                echo "extending file"
-                EXTENDEDDUMPFILE=${dev_paths[$di]}/$bc-$dumpi-ext.hprof
-                $HOMEdir/scripts/misc/extend-file.sh $DUMPFILE $EXTENDEDDUMPFILE $extended_dumpfile_size
-                DUMPFILE=$EXTENDEDDUMPFILE
-              fi
-              echo "calling sync"
-              sync $DUMPFILE # important!
-
-              # 4. run fio over the heap dump file
-
-              echo "running fio"
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
 
-              # get size of data read by each process (single file is partitioned across the processes)
-              dumpsize=`stat --format=%s $DUMPFILE`
-              sizepp=$(((($dumpsize / $nproc) / $bs) * $bs)) # set size to be aligned to block size
-
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              SIZE_PER_PROC="$sizepp" BS="$bs" FILE="$DUMPFILE" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt --bandwidth-log
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$bc-$dumpi-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
-              echo "done"
+              echo "$(date +%F/%H:%M:%S) Done"
               echo ""
-
-              ######################################### 
-              # MAIN RUN LOOP NEST ENDS HERE
-              #########################################
             done
           done
         done
       done
+
+      # 4. Remove the split/extended files before next dump
+      echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
+      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      echo ""
     done
   done
 done

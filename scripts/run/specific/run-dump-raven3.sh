@@ -25,16 +25,21 @@ HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
 dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_paths=("/mnt/ssd0/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
 dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+
+dev_names=("zram0")
+dev_paths=("$HOMEdir/zrammnt0-lzo")
+dev_names_sys=("/dev/zram0")
+dev_names_iostat=("zram0")
 
 # config file paths
 sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 
 # options for other fio variables
 block_sizes=(4096)
-nprocs=(32)
+nprocs=(32 64)
 rws=("read" "randread")
 sync_ioengines=("mmap" "sync")
 
@@ -43,7 +48,7 @@ dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jy
 dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
-maxdumps=5
+# maxdumps=5
 
 # dacapo_benchs="h2"
 # dacapo_benchs=($dacapo_benchs)
@@ -129,13 +134,13 @@ echo ""
 for di in "${!dev_names[@]}"; do
   for bc in "${dacapo_benchs[@]}"; do
     echo "==================== $(date +%F/%H:%M:%S) Starting benchmark $bc on device ${dev_names[$di]} ===================="
-    ndumps=$(find $HOMEdir/dumps -name $bc-*.hprof | wc -l)
-    ndumpsToRun=$(( maxdumps > ndumps ? ndumps : maxdumps ))
+    dumpfiles=$(find $HOMEdir/dumps -name $bc-*.hprof | xargs -L1 basename)
 
-    for i in $(seq $ndumpsToRun); do
-      dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
+    for dumpname in $dumpfiles; do
+      dumpname=${dumpname%.*}
+      echo $dumpname
 
-      echo "$(date +%F/%H:%M:%S) Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
+      echo "$(date +%F/%H:%M:%S) Preparing heapdump $dumpname on device ${dev_names[$di]}"
 
       # 1. Remove any existing files for this device
       echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
@@ -143,7 +148,7 @@ for di in "${!dev_names[@]}"; do
 
       # 2. Split and extend the heap dump
       echo "$(date +%F/%H:%M:%S) Splitting and extending file"
-      $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
+      $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$dumpname.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
       echo "$(date +%F/%H:%M:%S) Calling sync"
       sync ${dev_paths[$di]}/*
 
@@ -153,13 +158,13 @@ for di in "${!dev_names[@]}"; do
           for rw in "${rws[@]}"; do
             for ioengine in "${sync_ioengines[@]}"; do
 
-              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"
+              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $dumpname"
 
-              SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
+              SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$dumpname
               mkdir -p $SUBDIR
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$bc-$dumpi-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$dumpname-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 

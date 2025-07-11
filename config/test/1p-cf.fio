@@ -1,13 +1,12 @@
 [job]
-numa_cpu_nodes=0
-direct=0
-bs=4K
-ioengine=sync
-size=8G
-numjobs=1
+direct=1
+bs=64K
+ioengine=aio
+size=1G
+numjobs=32
+iodepth=2048
 group_reporting
 allow_file_create=1
-; directory=./zrammnt0-lzo
-directory=/mnt/ssd/adnan/bench
-rw=read
-pre_read=1
+directory=./zrammnt0-lzo
+; directory=/mnt/ssd0/adnan/bench
+rw=randread
