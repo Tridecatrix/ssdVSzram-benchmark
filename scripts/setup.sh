@@ -16,7 +16,7 @@ apt install fio
 # - pandasql
 # and the following for more complex analysis:
 # - matplotlib
-# - anything else imported by the scripts given
+# - anything else imported by the scripts givtoucen
 # I'd put the pip install commands for these here but you may be wanting to use a different package manager
 
 ./scripts/setup-zram.sh
