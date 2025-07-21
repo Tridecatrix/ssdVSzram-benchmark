@@ -1,10 +1,10 @@
 [job]
 numa_cpu_nodes=0
 direct=1
-bs=4K
+bs=96K
 ioengine=mmap
-numjobs=1
-size=10G
+size=1G
+numjobs=32
 group_reporting
 allow_file_create=1
 directory=/mnt/ssd/adnan/bench
