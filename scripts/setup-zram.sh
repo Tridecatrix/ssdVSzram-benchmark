@@ -2,16 +2,42 @@
 
 # run with sudo
 
+set -x
+
+# defaults
+size="128G"
+memlim="0"
+
+usage() {
+  echo "Usage: ./setup-zram.sh [-s DEVICE_SIZE] [-m MEMORY_LIMIT] [-h]"
+  echo "Default device size: 128G"
+  echo "Default memory limit: 0 (none)"
+}
+
+while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
+  -s | --size )
+    shift; size=$1
+    ;;
+  -m | --memlim )
+    shift; memlim=$1
+    ;;
+  -h | --help )
+    usage
+    ;;
+esac; shift; done
+if [[ "$1" == '--' ]]; then shift; fi
+
 # set up zram
 sudo modprobe zram num_devices=3
 
 cmp_algs=("lzo" "zstd" "lz4")
 
 for i in ${!cmp_algs[@]}; do
-    zdir=zrammnt$i-${cmp_algs[$i]}
+    zdir=/mnt/zrammnt$i-${cmp_algs[$i]} # update this if you want zram to be elsewhere
 
     mkdir -p $zdir
-    sudo zramctl /dev/zram$i -a ${cmp_algs[$i]} -s 128G
+    sudo zramctl /dev/zram$i -a ${cmp_algs[$i]} -s $size
+    sudo sh -c "echo $memlim > /sys/block/zram${i}/mem_limit"
     sudo mkfs.ext4 /dev/zram$i
     sudo mount /dev/zram$i $zdir
 
