@@ -39,7 +39,7 @@ for i in ${!cmp_algs[@]}; do
     sudo zramctl /dev/zram$i -a ${cmp_algs[$i]} -s $size
     sudo sh -c "echo $memlim > /sys/block/zram${i}/mem_limit"
     sudo mkfs.ext4 /dev/zram$i
-    sudo mount /dev/zram$i $zdir
+    sudo mount /dev/zram$i $zdir -o discard
 
     sudo chmod u+xrw $zdir
     sudo chown u7300623:users $zdir # NOTE: replace this with name of your user and user group
