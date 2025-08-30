@@ -4,14 +4,9 @@
 
 set -x
 
-# defaults
-size="128G"
-memlim="0"
-
 usage() {
   echo "Usage: ./setup-zram.sh [-s DEVICE_SIZE] [-m MEMORY_LIMIT] [-h]"
-  echo "Default device size: 128G"
-  echo "Default memory limit: 0 (none)"
+  echo "Suffixes allowed for both of these values" 
 }
 
 while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
@@ -23,9 +18,17 @@ while [[ "$1" =~ ^- && ! "$1" == "--" ]]; do case $1 in
     ;;
   -h | --help )
     usage
+    exit
     ;;
 esac; shift; done
 if [[ "$1" == '--' ]]; then shift; fi
+
+if [[ -z "$size" || -z "$memlim" ]]; then
+  echo "Error: Both -s (size) and -m (memlim) options are required."
+  echo "Note: for no memory limit, provide -m 0"
+  usage
+  exit 1
+fi
 
 # set up zram
 sudo modprobe zram num_devices=3
