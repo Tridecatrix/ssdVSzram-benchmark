@@ -81,16 +81,19 @@ for di in ${!dev_names[@]}; do
   # assert that directories exist
   if [ ! -d "${dev_paths[$di]}" ]; then
     echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, does not exist."
+    exit
   fi
 
   # assert that directories are accessible
   if [ ! -x "${dev_paths[$di]}" ]; then
     echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not accessible."
+    exit
   fi
 
   # assert that the directories are mounted on correct devices
   if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
     echo "Path given for device ${dev_names[$di]}, which is ${dev_path[$di]}, is not mounted on the specified device."
+    exit
   fi
 done
 

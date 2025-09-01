@@ -33,12 +33,12 @@ sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
 async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
-block_sizes=(4096 65536)
-nprocs=(32 64)
-iodepths=(128 2056)
+block_sizes=(4096)
+nprocs=(32)
+iodepths=()
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
-sync_ioengines=("sync" "mmap")
-async_ioengines=("libaio" "io_uring")
+sync_ioengines=("mmap")
+async_ioengines=()
 
 EXPNAME=raven3-benchmark
 
