@@ -2,7 +2,7 @@
 
 # run with sudo
 
-set -x
+# set -x
 
 usage() {
   echo "Usage: ./setup-zram.sh [-s DEVICE_SIZE] [-m MEMORY_LIMIT] [-h]"
