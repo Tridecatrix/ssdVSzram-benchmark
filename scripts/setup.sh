@@ -8,8 +8,18 @@ git submodule init
 git submodule update --init fio_scripts
 git submodule update --init system_util
 
-# install dependencies
-apt install fio
+# install fio and dependencies
+sudo apt-get update
+sudo apt-get install -y git build-essential libaio-dev libnuma-dev
+
+FIO_VERSION="3.40"
+git clone https://github.com/axboe/fio.git
+cd fio
+git checkout "fio-${FIO_VERSION}"
+./configure
+make -j$(nproc)
+sudo make install
+cd ..
 
 # for using the python scripts, you should also have the following python modules for quick analysis:
 # - pandas
