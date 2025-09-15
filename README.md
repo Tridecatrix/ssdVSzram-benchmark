@@ -12,8 +12,6 @@ Submodule repositories initially provided by Iacovos "Jack" Kolokakis.
 
 Run the `scripts/setup.sh` script to download the git submodules `fio_scripts` and `system_util` as well as initialize a mounting point for zram. You will likely need to adjust commands there as necessary, but the script contains the necessary steps. 
 
-The data submodule points to my original data repo which isn't downloaded by `scripts/setup.sh` because it is huge. You will likely want to create your own new data repo and modify `.gitmodules` to point to it.
-
 If you are using VICS machines, it is recommended to set up passwordless SSH connection from this device to Cockatoo so that run logs can be sent there for remote experiment monitoring.
 
 # Running base experiment
