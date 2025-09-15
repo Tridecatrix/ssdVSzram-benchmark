@@ -6,7 +6,7 @@
 # nohup ./scripts/run/specific/run-dump.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-dump.sh | tee data-dump/log.txt | ssh ctoo 'cat /dev/stdin > fioLogDump.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-dump.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogFinch2.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -24,25 +24,25 @@ totalfilesize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
-dev_names=("ssdraid" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/nvme-raid/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/md1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("md1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
+dev_paths=("/mnt/ssd/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+dev_names_iostat=("nvme0c0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
 sync_config="$HOMEdir/config/2025-07-07-run-dumps-multiple-procs/32-proc.fio"
 
 # options for other fio variables
-block_sizes=(4096)
-nprocs=(32 64 96)
+block_sizes=(4K 8K 16K)
+nprocs=(32 64)
 rws=("read" "randread")
 sync_ioengines=("mmap" "sync")
 
 # dacapo benchmarks
-# dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
-# dacapo_benchs=($dacapo_benchs)
-dacapo_benchs="avrora"
+dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
 dacapo_benchs=($dacapo_benchs)
+# dacapo_benchs="avrora"
+# dacapo_benchs=($dacapo_benchs)
 
 # max number of dumps to run for each benchmark. used to avoid spending ages running fio on every dump.
 maxdumps=1
@@ -51,7 +51,7 @@ maxdumps=1
 # dacapo_benchs=($dacapo_benchs)
 # maxdumps=2
 
-EXPNAME=fourth-run-dumps-part-2
+EXPNAME=fourth-run-dumps-block-sizes
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
