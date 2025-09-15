@@ -10,5 +10,8 @@ scratch
 dumps
 reprdumps
 
+fio-3.40
+
 # data folders (these are seperate repos, which I tended to clone as subdirectories of this repo for convenience. embedded git repos kinda cursed but whoops)
 data-raven3
+data-raven4

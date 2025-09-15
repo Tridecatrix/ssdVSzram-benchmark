@@ -2,6 +2,12 @@ I/O benchmarking data and scripts for profiling and comparing ZRAM and SSD.
 
 Submodule repositories initially provided by Iacovos "Jack" Kolokakis.
 
+# TODOS
+
+(URGENT) Update run scripts:
+- make sure the comments describing what command to run the script with is accurate
+- update all mentions of zrammnt to fit new location of zram mounts (/mnt)
+
 # Setup
 
 Run the `scripts/setup.sh` script to download the git submodules `fio_scripts` and `system_util` as well as initialize a mounting point for zram. You will likely need to adjust commands there as necessary, but the script contains the necessary steps. 
