@@ -24,7 +24,7 @@ HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
 dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd0/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
 dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
 dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
@@ -33,14 +33,14 @@ sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
 async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
-block_sizes=(4096)
+block_sizes=(64K)
 nprocs=(32)
 iodepths=()
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
-sync_ioengines=("mmap")
+sync_ioengines=("mmap" "sync")
 async_ioengines=()
 
-EXPNAME=raven3-benchmark
+EXPNAME=raven3-benchmark-mini
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
