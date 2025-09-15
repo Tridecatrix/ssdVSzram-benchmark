@@ -4,9 +4,6 @@
 [submodule "fio_scripts"]
 	path = fio_scripts
 	url = git@github.com:jackkolokasis/fio_scripts.git
-[submodule "ssdVSzram-data"]
-	path = data
-	url = git@github.com:Tridecatrix/ssdVSzram-data.git
 [submodule "benchmarks/lucene-benchmark"]
 	path = benchmarks/lucene-benchmark
 	url = git@gitlab.cecs.anu.edu.au:u7300623/lucene-benchmark.git
