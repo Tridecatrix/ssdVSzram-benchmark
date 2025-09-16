@@ -1,4 +1,4 @@
-# Date repo links
+# Raw data repo links
 
 SSH:
 finch2: git@github.com:Tridecatrix/ssdVSzram-data-finch2.git
