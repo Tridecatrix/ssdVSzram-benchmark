@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-raven3.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven3.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-raven3.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven3.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -40,9 +40,9 @@ rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=raven3-exp-a1
+EXPNAME=raven3-benchmark
 
-RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
+RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
 
 # ---------------------------------

@@ -42,7 +42,7 @@ async_ioengines=("libaio" "io_uring")
 
 EXPNAME=raven4-benchmark-1p
 
-RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
+RESULTSDIR=data-raven4/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
 
 # ---------------------------------
