@@ -6,7 +6,7 @@
 # nohup ./scripts/run/specific/run-raven4.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-raven4.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven4.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-raven4.sh | tee data-raven4/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven4.txt' & disown
 
 # ----------------------------------
 # parameters
