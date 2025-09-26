@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/run.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-raven4.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven4.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-raven4.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven4.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -34,13 +34,13 @@ async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
 
 # options for other fio variables
 block_sizes=(4096 65536)
-nprocs=(1 32 64)
+nprocs=(1)
 iodepths=(128)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=raven4-exp-a1
+EXPNAME=raven4-benchmark-1p
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR

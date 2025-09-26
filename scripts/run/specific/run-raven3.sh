@@ -40,7 +40,7 @@ rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=raven3-write-perf-32p
+EXPNAME=raven3-exp-a1
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
