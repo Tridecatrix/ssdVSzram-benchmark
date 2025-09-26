@@ -6,7 +6,7 @@
 # nohup ./scripts/run/run.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven4.txt' & disown
+# stdbuf -oL nohup ./scripts/run/run.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven3.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -19,14 +19,14 @@ testrunopt=""
 outputFormat="json"
 
 # constants
-totalSize=$((32 * 1024 * 1024 * 1024)) # total file size
+totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
-dev_names=("ssdraid" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/nvme-raid/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/md127" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("md127" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
+dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
 sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
@@ -34,13 +34,13 @@ async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
 block_sizes=(4096 65536)
-nprocs=(32 64)
+nprocs=(32)
 iodepths=(128)
-rws=("read" "write" "rw" "randread" "randwrite" "randrw")
+rws=("write" "randwrite")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=raven4-benchmark
+EXPNAME=raven3-write-perf-32p
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
