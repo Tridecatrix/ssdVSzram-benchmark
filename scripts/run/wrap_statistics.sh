@@ -2,7 +2,7 @@
 
 CMD=$1
 EXPNAME=$2
-if [ -z $RDIR ]; then
+if [ -z $EXPNAME ]; then
     EXPNAME="miscexp"
 fi
 HOMEdir=`git rev-parse --show-toplevel`
