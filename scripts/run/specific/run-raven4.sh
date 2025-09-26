@@ -29,18 +29,18 @@ dev_names_sys=("/dev/md127" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to d
 dev_names_iostat=("md127" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
-async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
+sync_config="$HOMEdir/config/2025-03-04-second-run-finch2/sync.fio"
+async_config="$HOMEdir/config/2025-03-04-second-run-finch2/async.fio"
 
 # options for other fio variables
 block_sizes=(4096 65536)
-nprocs=(32 64)
+nprocs=(1 32 64)
 iodepths=(128)
 rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
-EXPNAME=raven4-benchmark
+EXPNAME=raven4-exp-a1
 
 RESULTSDIR=data/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR

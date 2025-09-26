@@ -34,9 +34,9 @@ async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
 block_sizes=(4096 65536)
-nprocs=(32)
+nprocs=(1 32 64)
 iodepths=(128)
-rws=("write" "randwrite")
+rws=("read" "write" "rw" "randread" "randwrite" "randrw")
 sync_ioengines=("sync" "mmap")
 async_ioengines=("libaio" "io_uring")
 
