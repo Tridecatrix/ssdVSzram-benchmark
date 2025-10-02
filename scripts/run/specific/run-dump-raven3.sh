@@ -117,7 +117,7 @@ echo "Run script: run-dump-split-file-opt.sh"
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
 echo "Zram config:"
-zramctl | tee $RESULTSDIR/zram-config.txt
+zramctl --output-all | tee $RESULTSDIR/zram-config.txt
 echo ""
 
 # ----------------------------------
@@ -156,7 +156,7 @@ for di in "${!dev_names[@]}"; do
 
               echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $dumpname"
 
-              SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$dumpname
+              SUBDIR=$RESULTSDIR/$rw/nproc-/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$dumpname
               mkdir -p $SUBDIR
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR

@@ -121,7 +121,7 @@ echo "Run script: run-dump-split-file-opt.sh"
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
 echo "Zram config:"
-zramctl | tee $RESULTSDIR/zram-config.txt
+zramctl --output-all | tee $RESULTSDIR/zram-config.txt
 echo ""
 
 # ----------------------------------

@@ -24,7 +24,7 @@ HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
 dev_names=("ssdraid" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/nvme-raid/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_paths=("/mnt/nvme-raid/adnan/bench" "$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device 
 dev_names_sys=("/dev/md127" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
 dev_names_iostat=("md127" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
@@ -81,6 +81,12 @@ for di in ${!dev_names[@]}; do
   if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
     echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not mounted on the specified device."
   fi
+  
+  # assert that the SparkBench directory is not present
+  if [ -d "${dev_paths[$di]}/SparkBench" ]; then
+    echo "Device ${dev_names[$di]} has spark bench directory; aborting as it will be deleted by experiment otherwise"
+    exit
+  fi
 done
 
 echo "Completed pre-run checks; all directories specified were found, accessible and mounted on specified devices."
@@ -104,7 +110,7 @@ echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.tx
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
 echo "Zram config:"
-zramctl | tee $RESULTSDIR/zram-config.txt
+zramctl --output-all | tee $RESULTSDIR/zram-config.txt
 echo ""
 
 # ----------------------------------
@@ -130,7 +136,7 @@ for bs in "${block_sizes[@]}"; do
             mkdir -p $SUBSUBDIR
 
             echo "removing job files if they exist"
-            rm -f ${dev_paths[$di]}/job-* 
+            rm -f ${dev_paths[$di]}/job* 
 
             echo "`date +%F/%H:%M:%S:` beginning run"
             $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
@@ -151,7 +157,7 @@ for bs in "${block_sizes[@]}"; do
           mkdir -p $SUBSUBDIR
 
           echo "removing job files if they exist"
-          rm -f ${dev_paths[$di]}/job-* 
+          rm -f ${dev_paths[$di]}/job* 
 
           echo "`date +%F/%H:%M:%S:`: beginning run"
           $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR

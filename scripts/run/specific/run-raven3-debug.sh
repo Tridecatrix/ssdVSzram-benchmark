@@ -23,24 +23,22 @@ totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
 # device settings
-dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names=("zram0") # (informal) device names
+dev_paths=("/mnt/zrammnt0-lzo") # paths where job files should be stored for each device
+dev_names_sys=("/dev/zram0") # paths to device files for each device
+dev_names_iostat=("zram0") # names of devices as given in output of iostat
 
 # config file paths
 sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
 async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
 
 # options for other fio variables
-block_sizes=(4096 65536)
-nprocs=(1 32 64)
+block_sizes=(4096)
+nprocs=(32)
 iodepths=(128)
-rws=("read" "write" "rw" "randread" "randwrite" "randrw")
+rws=("read") 
 sync_ioengines=("sync" "mmap")
-async_ioengines=("libaio" "io_uring")
-
-EXPNAME=raven3-benchmark
+EXPNAME=raven3-debug
 
 RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
@@ -82,12 +80,6 @@ for di in ${!dev_names[@]}; do
   # assert that the directories are mounted on correct devices
   if df ${dev_paths[$di]} | xargs grep -qs ${dev_names_sys[$di]}; then
     echo "Path given for device ${dev_names[$di]}, which is ${dev_paths[$di]}, is not mounted on the specified device."
-    exit
-  fi
-
-  # assert that the SparkBench directory is not present
-  if [ -d "${dev_paths[$di]}/SparkBench" ]; then
-    echo "Device ${dev_names[$di]} has spark bench directory; aborting as it will be deleted by experiment otherwise"
     exit
   fi
 done
@@ -138,8 +130,8 @@ for bs in "${block_sizes[@]}"; do
             SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/${dev_names[$di]}"
             mkdir -p $SUBSUBDIR
 
-            echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
-            find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+            echo "removing job files if they exist"
+            rm -f ${dev_paths[$di]}/job-* 
 
             echo "`date +%F/%H:%M:%S:` beginning run"
             $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
@@ -159,8 +151,8 @@ for bs in "${block_sizes[@]}"; do
           SUBSUBDIR="$SUBDIR/sync-$ioengine/${dev_names[$di]}"
           mkdir -p $SUBSUBDIR
 
-          echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
-          find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+          echo "removing job files if they exist"
+          rm -f ${dev_paths[$di]}/job-* 
 
           echo "`date +%F/%H:%M:%S:`: beginning run"
           $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
