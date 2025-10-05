@@ -136,9 +136,26 @@ for bs in "${block_sizes[@]}"; do
           SUBSUBDIR="$SUBDIR/async-$ioengine/iodepth-$iodepth/zram"
           mkdir -p $SUBSUBDIR
 
+          # Start zram monitoring
+          echo "Starting zram monitoring for /dev/zram0"
+          ./scripts/misc/zram_usage.sh "$SUBSUBDIR/zram_usage.txt" "/dev/zram0" &
+          ZRAM_PID=$!
+
           ./system_util/start_statistics.sh -d $SUBSUBDIR
           SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           ./system_util/stop_statistics.sh -d $SUBSUBDIR
+          
+          # Stop zram monitoring and parse results
+          echo "Stopping zram monitoring (PID: $ZRAM_PID)"
+          kill $ZRAM_PID 2>/dev/null
+          wait $ZRAM_PID 2>/dev/null
+          
+          # Parse zram results if the file exists
+          if [[ -f "$SUBSUBDIR/zram_usage.txt" ]]; then
+            echo "Parsing zram results"
+            ./scripts/misc/parse_zram_results.sh "$SUBSUBDIR" > "$SUBSUBDIR/zram_parsed.csv"
+          fi
+          
           ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
           echo "running async (engine $ioengine, iodepth $iodepth) on ssd"
@@ -160,9 +177,26 @@ for bs in "${block_sizes[@]}"; do
         SUBSUBDIR="$SUBDIR/sync-$ioengine/zram"
         mkdir -p $SUBSUBDIR
 
+        # Start zram monitoring
+        echo "Starting zram monitoring for /dev/zram0"
+        ./scripts/misc/zram_usage.sh "$SUBSUBDIR/zram_usage.txt" "/dev/zram0" &
+        ZRAM_PID=$!
+
         ./system_util/start_statistics.sh -d $SUBSUBDIR
         SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="$ZRAMdir" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
         ./system_util/stop_statistics.sh -d $SUBSUBDIR
+        
+        # Stop zram monitoring and parse results
+        echo "Stopping zram monitoring (PID: $ZRAM_PID)"
+        kill $ZRAM_PID 2>/dev/null
+        wait $ZRAM_PID 2>/dev/null
+        
+        # Parse zram results if the file exists
+        if [[ -f "$SUBSUBDIR/zram_usage.txt" ]]; then
+          echo "Parsing zram results"
+          ./scripts/misc/parse_zram_results.sh "$SUBSUBDIR" > "$SUBSUBDIR/zram_parsed.csv"
+        fi
+        
         ./system_util/extract-data.sh -r $SUBSUBDIR -d zram0
 
         echo "running sync (engine $ioengine) on ssd"

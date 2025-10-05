@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/specific/run-raven3.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-raven3-debug.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-raven3.sh | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven3.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-raven3-debug.sh | tee data-raven3-debug/log.txt | ssh ctoo 'cat /dev/stdin > fioLogRaven3Debug.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -133,10 +133,32 @@ for bs in "${block_sizes[@]}"; do
             echo "removing job files if they exist"
             rm -f ${dev_paths[$di]}/job-* 
 
+            # Start zram monitoring if this is a zram device
+            ZRAM_PID=""
+            if [[ ${dev_names_sys[$di]} == *"zram"* ]]; then
+              echo "Starting zram monitoring for ${dev_names_sys[$di]}"
+              $HOMEdir/scripts/misc/zram_usage.sh "$SUBSUBDIR/zram_usage.txt" "${dev_names_sys[$di]}" &
+              ZRAM_PID=$!
+            fi
+
             echo "`date +%F/%H:%M:%S:` beginning run"
             $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
             SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
             $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
+            
+            # Stop zram monitoring and parse results if monitoring was started
+            if [[ -n "$ZRAM_PID" ]]; then
+              echo "Stopping zram monitoring (PID: $ZRAM_PID)"
+              kill $ZRAM_PID 2>/dev/null
+              wait $ZRAM_PID 2>/dev/null
+              
+              # Parse zram results if the file exists
+              if [[ -f "$SUBSUBDIR/zram_usage.txt" ]]; then
+                echo "Parsing zram results"
+                $HOMEdir/scripts/misc/parse_zram_results.sh "$SUBSUBDIR" > "$SUBSUBDIR/zram_parsed.csv"
+              fi
+            fi
+            
             $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
             echo "`date +%F/%H:%M:%S:` done"
@@ -154,10 +176,32 @@ for bs in "${block_sizes[@]}"; do
           echo "removing job files if they exist"
           rm -f ${dev_paths[$di]}/job-* 
 
+          # Start zram monitoring if this is a zram device
+          ZRAM_PID=""
+          if [[ ${dev_names_sys[$di]} == *"zram"* ]]; then
+            echo "Starting zram monitoring for ${dev_names_sys[$di]}"
+            $HOMEdir/scripts/misc/zram_usage.sh "$SUBSUBDIR/zram_usage.txt" "${dev_names_sys[$di]}" &
+            ZRAM_PID=$!
+          fi
+
           echo "`date +%F/%H:%M:%S:`: beginning run"
           $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
           SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
+          
+          # Stop zram monitoring and parse results if monitoring was started
+          if [[ -n "$ZRAM_PID" ]]; then
+            echo "Stopping zram monitoring (PID: $ZRAM_PID)"
+            kill $ZRAM_PID 2>/dev/null
+            wait $ZRAM_PID 2>/dev/null
+            
+            # Parse zram results if the file exists
+            if [[ -f "$SUBSUBDIR/zram_usage.txt" ]]; then
+              echo "Parsing zram results"
+              $HOMEdir/scripts/misc/parse_zram_results.sh "$SUBSUBDIR" > "$SUBSUBDIR/zram_parsed.csv"
+            fi
+          fi
+          
           $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
           echo "`date +%F/%H:%M:%S:`: done"

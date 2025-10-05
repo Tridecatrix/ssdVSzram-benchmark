@@ -3,10 +3,10 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/specific/run-dump-split-file-opt.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/specific/run-dump-raven3.sh > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/specific/run-dump-split-file-opt.sh | tee data/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/specific/run-dump-raven3.sh | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLogDumpRaven3.txt' & disown
 
 # ----------------------------------
 # parameters
@@ -159,9 +159,31 @@ for di in "${!dev_names[@]}"; do
               SUBDIR=$RESULTSDIR/$rw/nproc-/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$dumpname
               mkdir -p $SUBDIR
 
+              # Start zram monitoring if this is a zram device
+              ZRAM_PID=""
+              if [[ ${dev_names_sys[$di]} == *"zram"* ]]; then
+                echo "Starting zram monitoring for ${dev_names_sys[$di]}"
+                $HOMEdir/scripts/misc/zram_usage.sh "$SUBDIR/zram_usage.txt" "${dev_names_sys[$di]}" &
+                ZRAM_PID=$!
+              fi
+
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
               BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$dumpname-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
+              
+              # Stop zram monitoring and parse results if monitoring was started
+              if [[ -n "$ZRAM_PID" ]]; then
+                echo "Stopping zram monitoring (PID: $ZRAM_PID)"
+                kill $ZRAM_PID 2>/dev/null
+                wait $ZRAM_PID 2>/dev/null
+                
+                # Parse zram results if the file exists
+                if [[ -f "$SUBDIR/zram_usage.txt" ]]; then
+                  echo "Parsing zram results"
+                  $HOMEdir/scripts/misc/parse_zram_results.sh "$SUBDIR" > "$SUBDIR/zram_parsed.csv"
+                fi
+              fi
+              
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
               echo "$(date +%F/%H:%M:%S) Done"
