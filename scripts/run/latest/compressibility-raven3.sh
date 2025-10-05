@@ -35,8 +35,8 @@ dev_names_sys=("/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files f
 dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-10-05-FINAL-RUN/async-compressible.fio"
-async_config="$HOMEdir/config/2025-10-05-FINAL-RUN/sync-compressible.fio"
+sync_config="$HOMEdir/config/2025-10-05-FINAL-RUN/sync-compressible.fio"
+async_config="$HOMEdir/config/2025-10-05-FINAL-RUN/async-compressible.fio"
 
 # options for other fio variables
 numa=all
@@ -117,6 +117,7 @@ echo "Read/write type options: ${rws[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Async I/O engines: ${async_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Async I/O depths: ${iodepths[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Compression percentages: ${compress_percentages[@]}" | tee -a $RESULTSDIR/fio-config.txt
 
 # check ZRAM config parameters; print them to sout as well as recording them in a file in the resultdir
 echo ""
@@ -131,12 +132,15 @@ echo ""
 echo "beginning runs"
 echo ""
 
-for bs in "${block_sizes[@]}"; do
-  for nproc in "${nprocs[@]}"; do
-    for rw in "${rws[@]}"; do
-      echo "running fio with block size $bs, $nproc processes and $rw for read/write setting"
+for compress_pct in "${compress_percentages[@]}"; do
+  echo "running with compression percentage: $compress_pct%"
+  
+  for bs in "${block_sizes[@]}"; do
+    for nproc in "${nprocs[@]}"; do
+      for rw in "${rws[@]}"; do
+        echo "running fio with block size $bs, $nproc processes, $rw for read/write setting, and $compress_pct% compression"
 
-      SUBDIR="$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs"
+        SUBDIR="$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/compress-$compress_pct"
 
       # run async configs
       for ioengine in "${async_ioengines[@]}"; do
@@ -151,7 +155,7 @@ for bs in "${block_sizes[@]}"; do
 
             echo "`date +%F/%H:%M:%S:` beginning run"
             $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
-            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+            SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" IODEPTH="$iodepth" NUMA="$numa" CMPR_PNT="$compress_pct" fio $async_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
             $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
             $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
@@ -172,7 +176,7 @@ for bs in "${block_sizes[@]}"; do
 
           echo "`date +%F/%H:%M:%S:`: beginning run"
           $HOMEdir/system_util/start_statistics.sh -d $SUBSUBDIR
-          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+          SIZE_PER_PROC="$(($totalSize/$nproc))" BS="$bs" DIR="${dev_paths[$di]}" NPROC="$nproc" RW="$rw" IOENGINE="$ioengine" NUMA="$numa" CMPR_PNT="$compress_pct" fio $sync_config --output="$SUBSUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
           $HOMEdir/system_util/stop_statistics.sh -d $SUBSUBDIR
           $HOMEdir/system_util/extract-data.sh -r $SUBSUBDIR -d ${dev_names_iostat[$di]}
 
@@ -180,7 +184,8 @@ for bs in "${block_sizes[@]}"; do
         done
       done
 
-    echo ""
+      echo ""
+      done
     done
   done
 done
