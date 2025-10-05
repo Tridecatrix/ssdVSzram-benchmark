@@ -59,7 +59,7 @@ fi
 # iodepths, rws, sync_ioengines, async_ioengines, compress_percentages
 
 # Validate that required variables are set
-required_vars=("dev_names" "dev_paths" "dev_names_sys" "dev_names_iostat" "sync_config" "async_config" "numa" "block_sizes" "nprocs" "rws" "sync_ioengines" "compress_percentages")
+required_vars=("dev_names" "dev_paths" "dev_names_sys" "dev_names_iostat" "sync_config" "async_config" "numa" "block_sizes" "nprocs" "rws" "compress_percentages")
 missing_vars=()
 
 for var in "${required_vars[@]}"; do
@@ -71,6 +71,26 @@ done
 if [ ${#missing_vars[@]} -gt 0 ]; then
     echo "Error: The following required variables are not set in the config file:"
     printf '  %s\n' "${missing_vars[@]}"
+    echo "Please check your configuration file: $CONFIG_FILE"
+    exit 1
+fi
+
+# Additional validation for ioengines and iodepths
+validation_errors=()
+
+# Check that at least one of sync_ioengines or async_ioengines is provided
+if [ ${#sync_ioengines[@]} -eq 0 ] && [ ${#async_ioengines[@]} -eq 0 ]; then
+    validation_errors+=("At least one of sync_ioengines or async_ioengines must be provided")
+fi
+
+# Check that if async_ioengines are provided, iodepths must also be provided
+if [ ${#async_ioengines[@]} -gt 0 ] && [ ${#iodepths[@]} -eq 0 ]; then
+    validation_errors+=("iodepths must be provided when async_ioengines are specified")
+fi
+
+if [ ${#validation_errors[@]} -gt 0 ]; then
+    echo "Error: Configuration validation failed:"
+    printf '  %s\n' "${validation_errors[@]}"
     echo "Please check your configuration file: $CONFIG_FILE"
     exit 1
 fi
