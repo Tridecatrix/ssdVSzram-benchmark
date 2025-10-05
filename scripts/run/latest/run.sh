@@ -3,10 +3,11 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/latest/compressibility-raven3.sh <config_file.sh> > data/log.txt 2>&1 &
+# nohup ./scripts/run/latest/run.sh <config_file.sh> > data-raven3/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/latest/compressibility-raven3.sh <config_file.sh> | tee data-compressibility/log.txt | ssh ctoo 'cat /dev/stdin > fioLogCompressibility.txt' & disown
+# stdbuf -oL nohup ./scripts/run/latest/run.sh <config_file.sh> | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/latest/run.sh ./scripts/run/latest/conf-async.sh | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 
 # ----------------------------------
 # command line arguments

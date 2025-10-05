@@ -14,7 +14,7 @@ testrunopt=""
 outputFormat="json"
 
 # total size for the benchmark (32GB default)
-totalSize=$((32 * 1024 * 1024 * 1024))
+totalSize=$((8 * 1024 * 1024 * 1024))
 
 # ----------------------------------
 # Device settings
