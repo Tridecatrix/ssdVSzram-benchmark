@@ -3,50 +3,81 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/latest/compressibility-raven3.sh > data/log.txt 2>&1 &
+# nohup ./scripts/run/latest/compressibility-raven3.sh <config_file.sh> > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/latest/compressibility-raven3.sh | tee data-compressibility/log.txt | ssh ctoo 'cat /dev/stdin > fioLogCompressibility.txt' & disown
+# stdbuf -oL nohup ./scripts/run/latest/compressibility-raven3.sh <config_file.sh> | tee data-compressibility/log.txt | ssh ctoo 'cat /dev/stdin > fioLogCompressibility.txt' & disown
+
+# ----------------------------------
+# command line arguments
+# ----------------------------------
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <config_file.sh>"
+    echo "  config_file.sh: Path to shell script containing configuration parameters"
+    exit 1
+fi
+
+CONFIG_FILE="$1"
+
+# Check if config file exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: Configuration file '$CONFIG_FILE' not found"
+    exit 1
+fi
+
+# Source the configuration file to load parameters
+echo "Loading configuration from: $CONFIG_FILE"
+source "$CONFIG_FILE"
+
+# constants
+HOMEdir=`git rev-parse --show-toplevel`
+
+# Construct config file paths if they were set as relative paths
+if [ -n "$sync_config_path" ]; then
+    sync_config="$HOMEdir/$sync_config_path"
+elif [ -z "$sync_config" ]; then
+    echo "Error: Neither sync_config nor sync_config_path is set in config file"
+    exit 1
+fi
+
+if [ -n "$async_config_path" ]; then
+    async_config="$HOMEdir/$async_config_path"
+elif [ -z "$async_config" ]; then
+    echo "Error: Neither async_config nor async_config_path is set in config file"
+    exit 1
+fi
 
 # ----------------------------------
 # parameters
 # ----------------------------------
 
-# set these before running
-# - testrunopt can be set to --parse-only to disable fio from actually running
-# - outputFormat is json by default
-testrunopt=""
-outputFormat="json"
+# The following parameters should now be set by the sourced config file:
+# testrunopt, outputFormat, totalSize, dev_names, dev_paths, dev_names_sys,
+# dev_names_iostat, sync_config, async_config, numa, block_sizes, nprocs,
+# iodepths, rws, sync_ioengines, async_ioengines, compress_percentages
 
-# constants
-totalSize=$((32 * 1024 * 1024 * 1024))
-HOMEdir=`git rev-parse --show-toplevel`
+# Validate that required variables are set
+required_vars=("dev_names" "dev_paths" "dev_names_sys" "dev_names_iostat" "sync_config" "async_config" "numa" "block_sizes" "nprocs" "rws" "sync_ioengines" "compress_percentages")
+missing_vars=()
 
-# # device settings
-# dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-# dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
-# dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-# dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+for var in "${required_vars[@]}"; do
+    if [ -z "${!var}" ]; then
+        missing_vars+=("$var")
+    fi
+done
 
-# device settings
-dev_names=("zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output of iostat
+if [ ${#missing_vars[@]} -gt 0 ]; then
+    echo "Error: The following required variables are not set in the config file:"
+    printf '  %s\n' "${missing_vars[@]}"
+    echo "Please check your configuration file: $CONFIG_FILE"
+    exit 1
+fi
 
-# config file paths
-sync_config="$HOMEdir/config/2025-10-05-FINAL-RUN/sync-compressible.fio"
-async_config="$HOMEdir/config/2025-10-05-FINAL-RUN/async-compressible.fio"
-
-# options for other fio variables
-numa=all
-block_sizes=(65536)
-nprocs=(1)
-iodepths=()
-rws=("read" "write")
-sync_ioengines=("sync")
-async_ioengines=()
-compress_percentages=(0 10 20 30 40 50 60 70 80 90 100)
+# Set default values for optional variables if not set
+: ${testrunopt:=""}
+: ${outputFormat:="json"}
+: ${totalSize:=$((32 * 1024 * 1024 * 1024))}
 
 EXPNAME=compressible-question-mark
 
