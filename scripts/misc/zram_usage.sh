@@ -20,26 +20,15 @@ echoheader() {
 
 # Output file name
 OUTPUT=$1        
-NUM_OF_EXECUTORS=$2
-ZRAMDEV=$(echo $3 | awk -F/ '{print $NF}')
+ZRAMDEV=$(echo $2 | awk -F/ '{print $NF}')
 
 if [[ ${ZRAMDEV:0:4} != "zram" ]]; then
     echo "Device $ZRAMDEV is not a zram device" >> "${OUTPUT}"
     exit 0
 fi
 
-# Number of executors
-numOfExecutors=0
-
 # Clear existing statistics
 echo 0 | sudo tee /sys/block/${ZRAMDEV}/mem_used_max > /dev/null
-
-# Wait here until the executors are launched
-while [ ${numOfExecutors} -lt "${NUM_OF_EXECUTORS}" ] 
-do
-    # Calculate number of executors running
-    numOfExecutors=$(jps |grep -c "CoarseGrainedExecutorBackend")
-done
 
 # Echo header line (for human readability)
 echoheader >> "${OUTPUT}"
