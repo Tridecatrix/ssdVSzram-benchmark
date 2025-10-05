@@ -101,7 +101,9 @@ params = {
     "device": "special",
     "direct": "job options:direct",
     "memlim": "special",
-    "file": "special"
+    "file": "special",
+    "buffer_compress_percentage": "job options:buffer_compress_percentage",
+    "buffer_compress_chunk": "job options:buffer_compress_chunk"
 }
 metrics = {
     "readBW_bytes": "read:bw_bytes",
@@ -115,7 +117,9 @@ paramDefaults = {
     "iodepth": 1,
     "rw": "read",
     "nproc": 1,
-    "direct": 0
+    "direct": 0,
+    "buffer_compress_percentage": "none",
+    "buffer_compress_chunk": "none"
 }
 
 # for the metrics, also create "human readable" columns that convert the number to appropriate units
@@ -212,7 +216,10 @@ for cname, cjson in allDataJson.items():
                 try:
                     value = value[key]
                 except KeyError:
-                    value = paramDefaults[key]
+                    # Use the column name (without 'c' prefix) to get default value
+                    param_name = colname[1:] if colname.startswith('c') else colname
+                    value = paramDefaults.get(param_name, "none")
+                    break
                 
         mRow[colname] = value
 
