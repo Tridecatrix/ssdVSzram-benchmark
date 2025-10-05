@@ -1,0 +1,1 @@
+find . -name *.sh | xargs -I {} sh -c "echo 'Chmodding {}...' & chmod +x {}"

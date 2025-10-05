@@ -79,7 +79,7 @@ fi
 : ${outputFormat:="json"}
 : ${totalSize:=$((32 * 1024 * 1024 * 1024))}
 
-EXPNAME=compressible-question-mark
+EXPNAME=compressibile-question-mark
 
 RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
