@@ -145,7 +145,7 @@ for bs in "${block_sizes[@]}"; do
               dumpi=$((($ndumps / $ndumpsToRun) * $i - 1)) 
 
               # remove any existing files
-              find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+              find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
               # copy over the heap dump
               cp $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]}

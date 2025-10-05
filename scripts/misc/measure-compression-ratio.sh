@@ -27,7 +27,7 @@ for bc in "${dacapo_benchs[@]}"; do
     for di in ${!dev_names[@]}; do
       # remove all files existing there except for lost+found, and issue fstrim
       # (note this command is a little broken because it still tries to recurse into the subdirectory lost+found, dunno how to stop that)
-      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
       fstrim ${dev_paths[$di]}
     done
 

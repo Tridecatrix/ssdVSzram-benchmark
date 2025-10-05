@@ -144,7 +144,7 @@ for di in "${!dev_names[@]}"; do
 
       # 1. Remove any existing files for this device
       echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
-      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
       # 2. Split and extend the heap dump
       echo "$(date +%F/%H:%M:%S) Splitting and extending file"
@@ -199,7 +199,7 @@ for di in "${!dev_names[@]}"; do
 
       # 4. Remove the split/extended files before next dump
       echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
-      find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+      find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
       echo ""
     done
   done

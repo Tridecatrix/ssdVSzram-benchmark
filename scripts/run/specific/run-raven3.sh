@@ -139,7 +139,7 @@ for bs in "${block_sizes[@]}"; do
             mkdir -p $SUBSUBDIR
 
             echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
-            find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+            find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
             # Start zram monitoring if this is a zram device
             ZRAM_PID=""
@@ -183,7 +183,7 @@ for bs in "${block_sizes[@]}"; do
           mkdir -p $SUBSUBDIR
 
           echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
-          find ${dev_paths[$di]}/* ! -name "lost+found" -exec rm -rf {} +
+          find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
           # Start zram monitoring if this is a zram device
           ZRAM_PID=""
