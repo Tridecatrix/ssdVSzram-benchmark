@@ -1,0 +1,15 @@
+[job]
+numa_cpu_nodes=all
+direct=1
+bs=64K
+ioengine=sync
+size=10G
+numjobs=1
+group_reporting
+allow_file_create=1
+directory=/mnt/zrammnt1-zstd
+; directory=/mnt/ssd0/adnan
+rw=read
+buffer_compress_percentage=50
+; refill_buffers
+buffer_compress_chunk=256

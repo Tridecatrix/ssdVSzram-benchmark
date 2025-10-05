@@ -22,25 +22,33 @@ outputFormat="json"
 totalSize=$((32 * 1024 * 1024 * 1024))
 HOMEdir=`git rev-parse --show-toplevel`
 
+# # device settings
+# dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
+# dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
+# dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+# dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+
 # device settings
-dev_names=("ssd" "zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("/mnt/ssd0/adnan" "/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
-dev_names_sys=("/dev/nvme0n1" "/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
-dev_names_iostat=("nvme0n1" "zram0" "zram1" "zram2") # names of devices as given in output of iostat
+dev_names=("zram0" "zram1" "zram2") # (informal) device names
+dev_paths=("/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_names_sys=("/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
+dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # config file paths
-sync_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/sync.fio"
-async_config="$HOMEdir/config/2025-07-10-no-NUMA-bind/async.fio"
+sync_config="$HOMEdir/config/2025-10-05-FINAL-RUN/async-compressible.fio"
+async_config="$HOMEdir/config/2025-10-05-FINAL-RUN/sync-compressible.fio"
 
 # options for other fio variables
-block_sizes=(4096 65536)
-nprocs=(1 32 64)
-iodepths=(128)
-rws=("read" "write" "rw" "randread" "randwrite" "randrw")
-sync_ioengines=("sync" "mmap")
-async_ioengines=("libaio" "io_uring")
+numa=all
+block_sizes=(65536)
+nprocs=(1)
+iodepths=()
+rws=("read" "write")
+sync_ioengines=("sync")
+async_ioengines=()
+compress_percentages=(0 10 20 30 40 50 60 70 80 90 100)
 
-EXPNAME=raven3-benchmark
+EXPNAME=compressible-question-mark
 
 RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
