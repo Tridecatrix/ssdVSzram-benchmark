@@ -160,8 +160,8 @@ def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4
     if is_plt:
         plt.xticks(np.arange(len(xs)), xs)
     elif hasattr(ax, 'set_xticks'):  # BrokenAxes or regular axes object
-        ax.set_xticks(np.arange(len(xs)))
-        ax.set_xticklabels(xs)
+        ax.set_xticks(np.arange(len(xs)), xs)
+        # ax.set_xticklabels(xs)
     else:  # Some other axes type
         ax.xticks(np.arange(len(xs)), xs)
     
