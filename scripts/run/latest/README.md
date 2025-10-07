@@ -1,3 +1,5 @@
+TODO: REWRITE THIS CUZ EWWWW AI
+
 # Compressibility Benchmark Configuration
 
 This directory contains the compressibility benchmark script and configuration files.
