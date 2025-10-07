@@ -6,8 +6,10 @@
 # nohup ./scripts/run/latest/run.sh <config_file.sh> > data-raven3/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
-# stdbuf -oL nohup ./scripts/run/latest/run.sh <config_file.sh> | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
-# stdbuf -oL nohup ./scripts/run/latest/run.sh ./scripts/run/latest/conf-async.sh | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# CONF=?    <-  replace ? with conf you want to run
+# stdbuf -oL nohup ./scripts/run/latest/run.sh $CONF | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+#
+#
 
 # ----------------------------------
 # command line arguments
@@ -27,12 +29,13 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
+# constants
+EXPNAME=compressibile-question-mark    # may be overwritten by source file
+HOMEdir=`git rev-parse --show-toplevel`
+
 # Source the configuration file to load parameters
 echo "Loading configuration from: $CONFIG_FILE"
 source "$CONFIG_FILE"
-
-# constants
-HOMEdir=`git rev-parse --show-toplevel`
 
 # Construct config file paths if they were set as relative paths
 if [ -n "$sync_config_path" ]; then
@@ -99,8 +102,6 @@ fi
 : ${testrunopt:=""}
 : ${outputFormat:="json"}
 : ${totalSize:=$((32 * 1024 * 1024 * 1024))}
-
-EXPNAME=compressibile-question-mark
 
 RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
