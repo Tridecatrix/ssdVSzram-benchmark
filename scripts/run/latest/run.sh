@@ -6,8 +6,9 @@
 # nohup ./scripts/run/latest/run.sh <config_file.sh> <devicemap.sh> > data-raven3/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
+# DMAP=?    <- put this in bashrc with the device mapping file
 # CONF=?    <-  replace ? with conf you want to run
-# stdbuf -oL nohup ./scripts/run/latest/run.sh $CONF | tee data-raven3/log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+# stdbuf -oL nohup ./scripts/run/latest/run.sh $CONF $DMAP | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 #
 #
 
@@ -18,7 +19,7 @@
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <config_file.sh> <devicemap.sh>"
     echo "  config_file.sh: Path to shell script containing configuration parameters"
-    echo "  devicemap.sh: Path to shell script containing device mappings"
+    echo "  devicemap.sh: Path to shell script containing device mappings (and result dir for server)"
     exit 1
 fi
 
@@ -113,7 +114,7 @@ fi
 : ${outputFormat:="json"}
 : ${totalSize:=$((32 * 1024 * 1024 * 1024))}
 
-RESULTSDIR=data-raven3/$(date +%F-time-%H-%M-%S)-$EXPNAME
+RESULTSDIR=$RESULTSDIR/$(date +%F-time-%H-%M-%S)-$EXPNAME
 mkdir -p $RESULTSDIR
 
 # ---------------------------------

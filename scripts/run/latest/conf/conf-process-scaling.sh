@@ -41,7 +41,7 @@ numa=all
 block_sizes=(64K)
 
 # Number of processes
-nprocs=(1 2 4 8 16 32 64)
+nprocs=(1 2 4 8 16 32 64 $(nproc --all))
 
 # IO depths (for async ioengines)
 iodepths=()

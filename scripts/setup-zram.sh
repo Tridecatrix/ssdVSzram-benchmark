@@ -38,7 +38,7 @@ cmp_algs=("lzo" "zstd" "lz4")
 for i in ${!cmp_algs[@]}; do
     zdir=/mnt/zrammnt$i-${cmp_algs[$i]} # update this if you want zram to be elsewhere
 
-    mkdir -p $zdir
+    sudo mkdir -p $zdir
     sudo zramctl /dev/zram$i -a ${cmp_algs[$i]} -s $size
     sudo sh -c "echo $memlim > /sys/block/zram${i}/mem_limit"
     sudo mkfs.ext4 /dev/zram$i
