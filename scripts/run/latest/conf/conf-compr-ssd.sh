@@ -28,10 +28,6 @@ totalSize=$((4 * 1024 * 1024 * 1024))
 
 # alternative device settings including SSD (uncomment to use)
 dev_names=("ssd") # (informal) device names
-dev_paths=("/mnt/ssd0/adnan") # paths where job files should be stored for each device
-dev_names_sys=("/dev/nvme0n1") # paths to device files for each device
-dev_names_iostat=("nvme0n1") # names of devices as given in output of iostat
-
 # ----------------------------------
 # Config file paths (will be resolved after HOMEdir is set)
 # ----------------------------------

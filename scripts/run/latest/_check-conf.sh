@@ -1,19 +1,36 @@
 #!/bin/bash
 
-CONFIG_FILE=$1
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <config_file.sh> <devicemap.sh>"
+    echo "  config_file.sh: Path to shell script containing configuration parameters"
+    echo "  devicemap.sh: Path to shell script containing device mappings"
+    exit 1
+fi
+
+CONFIG_FILE="$1"
+DEVICEMAP_FILE="$2"
 
 # Check if config file exists
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Error: Configuration file '$CONFIG_FILE' not found"
     exit 1
 fi
+if [ ! -f "$DEVICEMAP_FILE" ]; then
+    echo "Error: Device map file '$DEVICEMAP_FILE' not found"
+    exit 1
+fi
 
 # constants
+EXPNAME=misc-exp   # default
 HOMEdir=`git rev-parse --show-toplevel`
 
 # Source the configuration file to load parameters
+echo "Loading device map from: $DEVICEMAP_FILE"
+source "$DEVICEMAP_FILE"
 echo "Loading configuration from: $CONFIG_FILE"
-source "$CONFIG_FILE"
+source "$CONFIG_FILE"  # Note: dev_names will be overwritten by contents from this file.
+                       # This is intentional: the config file should specify which devices to use.
+                       # While the devicemap file specifies the paths for those devices.
 
 # Construct config file paths if they were set as relative paths
 if [ -n "$sync_config_path" ]; then
