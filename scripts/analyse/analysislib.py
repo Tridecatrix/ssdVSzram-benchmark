@@ -102,16 +102,30 @@ def format_time(time_in_ns):
 #        defaults to range(0, len(xs)). expected use case is if using multiple calls to this function, e.g. some bars are different color
 #        e.g. if you want some sets of bars to be a different color, but there are some issues with this that haven't
 #        been ironed out yet, e.g. how would the legend work for something like this?
-def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], l=0.7, d=None, labels=None, show=True, colors=None, xpos=[], fontsize=10):
-    plt.figure(figsize=figsize)
+def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], 
+                   l=0.7, d=None, labels=None, show=True, colors=None, xpos=[], 
+                   fontsize=10, create_new_figure=True, ax=None):
     
-    plt.grid(which="major", axis="y", zorder=0)
-
-    k = len(yss) # no of bars
+    # Use provided axes object (could be BrokenAxes) or create new figure
+    if ax is None:
+        if create_new_figure:
+            plt.figure(figsize=figsize)
+        ax = plt  # Use plt for normal plotting
+    
+    # Check if we're using plt or an actual axes object
+    is_plt = (ax == plt)
+    
+    # Use ax instead of plt for all plotting commands
+    if is_plt:
+        plt.grid(which="major", axis="y", zorder=0)
+    else:
+        ax.grid(which="major", axis="y", zorder=0)
+    
+    k = len(yss)
     w = l/k
-    if d == None: # d = 0 means nothing was specified/default was chosen
-        d = w # width of each sub-bar
-
+    if d == None:
+        d = w
+    
     if len(xpos) == 0:
         xpos = np.arange(len(xs))
         
@@ -121,26 +135,59 @@ def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4
     for i, ys in enumerate(yss):
         if labels == None:
             if colors == None:
-                plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3)
+                if is_plt:
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3)
+                else:
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3)
             else:
-                plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i])
+                if is_plt:
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i])
+                else:
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i])
         else:
             if colors == None:
-                plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i])
+                if is_plt:
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i])
+                else:
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i])
             else:
-                plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i])
-            
-    plt.xticks(np.arange(len(xs)), xs)
+                if is_plt:
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i])
+                else:
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i])
+    
+    # Handle xticks differently for different axes types
+    if is_plt:
+        plt.xticks(np.arange(len(xs)), xs)
+    elif hasattr(ax, 'set_xticks'):  # BrokenAxes or regular axes object
+        ax.set_xticks(np.arange(len(xs)))
+        ax.set_xticklabels(xs)
+    else:  # Some other axes type
+        ax.xticks(np.arange(len(xs)), xs)
+    
+    # Handle labels and titles
     if xlabel != None:
-        plt.xlabel(xlabel)
+        if is_plt:
+            plt.xlabel(xlabel)
+        else:
+            ax.set_xlabel(xlabel)
     if ylabel != None:
-        plt.ylabel(ylabel)
+        if is_plt:
+            plt.ylabel(ylabel)
+        else:
+            ax.set_ylabel(ylabel)
     if labels != None: 
-        plt.legend()
+        if is_plt:
+            plt.legend()
+        else:
+            ax.legend()
     if title != None:
-        plt.title(title)
-
-    if show:
+        if is_plt:
+            plt.title(title)
+        else:
+            ax.set_title(title)
+    
+    if show and is_plt:
         plt.show()
 
 # Helper function for grouped_barplot_flat (see below)
