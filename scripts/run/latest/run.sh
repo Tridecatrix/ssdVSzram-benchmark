@@ -10,9 +10,6 @@
 # CONF=?    <-  replace ? with conf you want to run
 # stdbuf -oL nohup ./scripts/run/latest/run.sh $CONF $DMAP | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
 #
-# CONF1=scripts/rum/latest/conf/maxperf-sync.sh
-# CONF2=scripts/rum/latest/conf/maxperf-async.sh
-# nohup ./scripts/run/latest/run.sh $CONF1 $DMAP | tee log1.txt & nohup ./scripts/run/latest/run.sh $CONF2 $DMAP | tee log2.txt
 
 # ----------------------------------
 # command line arguments
