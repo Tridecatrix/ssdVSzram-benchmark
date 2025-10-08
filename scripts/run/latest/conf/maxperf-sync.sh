@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Configuration file for compressibility-raven3.sh
+# Configuration file example for SSD + ZRAM testing
 # This file sets the environment variables needed for the benchmark run
 
 # ----------------------------------
@@ -13,15 +13,14 @@ testrunopt=""
 # outputFormat is json by default
 outputFormat="json"
 
-# total size for the benchmark (32GB default)
+# total size for the benchmark
 totalSize=$((32 * 1024 * 1024 * 1024))
 
 # ----------------------------------
-# Device settings
+# Device settings - SSD + ZRAM
 # ----------------------------------
 
-# alternative device settings including SSD (uncomment to use)
-dev_names=("ram") # (informal) device names
+dev_names=("ssd" "zram0" "zram1" "zram2" "ram") # (informal) device names
 
 # ----------------------------------
 # Config file paths (will be resolved after HOMEdir is set)
@@ -39,27 +38,27 @@ async_config_path="config/2025-10-05-FINAL-RUN/async-compressible.fio"
 numa=all
 
 # Block sizes to test
-block_sizes=(65536)
+block_sizes=(4K 64K 1M)
 
 # Number of processes
-nprocs=(32)
+nprocs=(1 $(nproc --all))
 
-# IO depths (empty for sync ioengines)
-iodepths=(32)
+# IO depths (for async ioengines)
+iodepths=()
 
 # Read/write patterns
-rws=("randrw")
+rws=("read" "write" "randread" "randwrite")
 
 # IO engines
-sync_ioengines=()
-async_ioengines=("aio")
+sync_ioengines=("sync")
+async_ioengines=()
 
-# Compression percentages to test
-compress_percentages=(80)
+# Compression percentages to test (subset for faster testing)
+compress_percentages=(50)
 
 # ----------------------------------
 # Experiment naming
 # ----------------------------------
 
 # Optional: customize experiment name
-EXPNAME=test
+EXPNAME=sync-maxperf
