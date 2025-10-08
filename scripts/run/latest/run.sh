@@ -9,7 +9,10 @@
 # DMAP=?    <- put this in bashrc with the device mapping file
 # CONF=?    <-  replace ? with conf you want to run
 # stdbuf -oL nohup ./scripts/run/latest/run.sh $CONF $DMAP | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog.txt' & disown
+<<<<<<< Updated upstream
 #
+=======
+>>>>>>> Stashed changes
 
 # ----------------------------------
 # command line arguments
