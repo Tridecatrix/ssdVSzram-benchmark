@@ -27,10 +27,48 @@ HOMEdir=`git rev-parse --show-toplevel`
 # Source the configuration file to load parameters
 echo "Loading device map from: $DEVICEMAP_FILE"
 source "$DEVICEMAP_FILE"
+
+# Save the device map arrays before they get overwritten
+devicemap_dev_names=("${dev_names[@]}")
+devicemap_dev_paths=("${dev_paths[@]}")
+devicemap_dev_names_sys=("${dev_names_sys[@]}")
+devicemap_dev_names_iostat=("${dev_names_iostat[@]}")
+
 echo "Loading configuration from: $CONFIG_FILE"
 source "$CONFIG_FILE"  # Note: dev_names will be overwritten by contents from this file.
                        # This is intentional: the config file should specify which devices to use.
                        # While the devicemap file specifies the paths for those devices.
+
+# Now map the config devices to their corresponding devicemap entries
+config_dev_names=("${dev_names[@]}")
+mapped_dev_paths=()
+mapped_dev_names_sys=()
+mapped_dev_names_iostat=()
+
+echo "Mapping config devices to devicemap entries:"
+for config_dev in "${config_dev_names[@]}"; do
+    found=false
+    for i in "${!devicemap_dev_names[@]}"; do
+        if [[ "${devicemap_dev_names[$i]}" == "$config_dev" ]]; then
+            mapped_dev_paths+=("${devicemap_dev_paths[$i]}")
+            mapped_dev_names_sys+=("${devicemap_dev_names_sys[$i]}")
+            mapped_dev_names_iostat+=("${devicemap_dev_names_iostat[$i]}")
+            echo "  $config_dev -> ${devicemap_dev_paths[$i]} (sys: ${devicemap_dev_names_sys[$i]}, iostat: ${devicemap_dev_names_iostat[$i]})"
+            found=true
+            break
+        fi
+    done
+    if [[ "$found" == false ]]; then
+        echo "Error: Device '$config_dev' specified in config file not found in device map"
+        echo "Available devices in device map: ${devicemap_dev_names[*]}"
+        exit 1
+    fi
+done
+
+# Replace the original arrays with the mapped ones
+dev_paths=("${mapped_dev_paths[@]}")
+dev_names_sys=("${mapped_dev_names_sys[@]}")
+dev_names_iostat=("${mapped_dev_names_iostat[@]}")
 
 # Construct config file paths if they were set as relative paths
 if [ -n "$sync_config_path" ]; then
