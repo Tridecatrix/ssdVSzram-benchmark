@@ -220,31 +220,37 @@ def grouped_barplot_flat(xs, ys, roworder=True, **kwargs):
 # Bars are sorted by the grouping col and then config col.
 # Adds spacing between config groups.
 def stacked_barplot_cpu_util(df, grouping_col='cdevice', config_col='crw', util_cols=['SYS_UTIL_perc', 'IOW_UTIL_perc', 'USR_UTIL_perc', 'IDL_UTIL_perc'],
-                             ioengine_val='mmap', numjobs_val=32, figsize=(10, 6), colors=None, show=True, group_gap=1):
+                             figsize=(10, 6), colors=None, show=True, group_gap=1):
     
-    # Filter DataFrame
-    df_filtered = df[(df['cioengine'] == ioengine_val) & (df['cnproc'] == numjobs_val)].copy()
+    # Assert that there's exactly one value for each combination of grouping_col and config_col
+    combination_counts = df.groupby([grouping_col, config_col]).size()
+    if not all(count == 1 for count in combination_counts):
+        duplicated_combinations = combination_counts[combination_counts != 1]
+        raise ValueError(f"Each combination of {grouping_col} and {config_col} must have exactly one row. "
+                        f"Found multiple/missing rows for: {duplicated_combinations.to_dict()}")
     
     # Sort by grouping then config 
-    df_filtered.sort_values([grouping_col, config_col], inplace=True)
+    df_sorted = df.sort_values([grouping_col, config_col]).copy()
     
     # Group by grouping column
-    grouped = df_filtered.groupby(grouping_col)
+    grouped = df_sorted.groupby(grouping_col)
     group_labels = []
     util_data = [[] for _ in util_cols]
+    gap_counter = 0
     
     for config, group in grouped:
         for _, row in group.iterrows():
             group_labels.append(f"{row[grouping_col]} - {row[config_col]}")
             for i, col in enumerate(util_cols):
                 util_data[i].append(row[col])
-        # Add gap
-        for _ in range(group_gap):
-            group_labels.append("")
+        # Add gap with unique labels
+        for gap_idx in range(group_gap):
+            group_labels.append(f"gap_{gap_counter}_{gap_idx}")
             for i in range(len(util_cols)):
                 util_data[i].append(0)
+            gap_counter += 1
     # Remove trailing gap
-    while group_labels and group_labels[-1] == "":
+    while group_labels and group_labels[-1].startswith("gap_"):
         group_labels.pop()
         for i in range(len(util_cols)):
             util_data[i].pop()
@@ -260,9 +266,19 @@ def stacked_barplot_cpu_util(df, grouping_col='cdevice', config_col='crw', util_
         plt.bar(group_labels, util_data[i], bottom=bottom, label=col, color=color)
         bottom += util_data[i]
     
+    # Hide gap labels on x-axis
+    ax = plt.gca()
+    x_labels = []
+    for label in group_labels:
+        if label.startswith("gap_"):
+            x_labels.append("")
+        else:
+            x_labels.append(label)
+    ax.set_xticklabels(x_labels)
+    
     plt.xlabel(f'{grouping_col} - {config_col}')
     plt.ylabel('Utilization (%)')
-    plt.title(f'CPU Utilization Breakdown (ioengine={ioengine_val}, numjobs={numjobs_val})')
+    plt.title(f'CPU Utilization Breakdown')
     plt.legend()
     plt.xticks(rotation=30, ha='right')
     plt.tight_layout()
