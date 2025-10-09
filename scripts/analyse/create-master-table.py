@@ -138,7 +138,8 @@ columns = {**{"c" + pname: ppath for pname, ppath in params.items()}, **metrics}
 # - device system names from device names (e.g. ssd = nvme0c0n1)
 
 mntpointToDname = {
-                    "mnt/ssd": "ssd", 
+                    "mnt/ssd": "ssd",
+                    "mnt/nvme-raid": "ssd-raid", 
                     "zrammount": "zram-lzo",
                     "zrammnt0": "zram-lzo",
                     "zrammnt1": "zram-zstd",
@@ -148,6 +149,7 @@ mntpointToDname = {
 
 dnameToSysname = {
     "ssd": "nvme0c0n1",
+    "ssd-raid": "md127",
     "zram-lzo": "zram0",
     "zram-zstd": "zram1",
     "zram-lz4": "zram2",
