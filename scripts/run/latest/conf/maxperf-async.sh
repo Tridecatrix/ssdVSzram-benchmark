@@ -20,7 +20,7 @@ totalSize=$((32 * 1024 * 1024 * 1024))
 # Device settings - SSD + ZRAM
 # ----------------------------------
 
-dev_names=("ssd" "zram0" "zram1" "zram2" "ram") # (informal) device names
+dev_names=("ssd" "ram") # (informal) device names
 
 # ----------------------------------
 # Config file paths (will be resolved after HOMEdir is set)

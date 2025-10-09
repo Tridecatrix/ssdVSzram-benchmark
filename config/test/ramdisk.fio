@@ -1,0 +1,13 @@
+[job]
+numa_cpu_nodes=0
+direct=1
+bs=64K
+ioengine=sync
+numjobs=64
+size=1G
+group_reporting
+allow_file_create=1
+; directory=/mnt/ssd/adnan/bench
+; directory=/mnt/ssd0/adnan/bench
+directory=/mnt/tmpfs
+rw=randwrite
