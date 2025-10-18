@@ -103,7 +103,8 @@ params = {
     "memlim": "special",
     "file": "special",
     "buffer_compress_percentage": "job options:buffer_compress_percentage",
-    "buffer_compress_chunk": "job options:buffer_compress_chunk"
+    "buffer_compress_chunk": "job options:buffer_compress_chunk",
+    "rwmixwrite": "job options:rwmixwrite"
 }
 metrics = {
     "readBW_bytes": "read:bw_bytes",
@@ -119,7 +120,8 @@ paramDefaults = {
     "nproc": 1,
     "direct": 0,
     "buffer_compress_percentage": "none",
-    "buffer_compress_chunk": "none"
+    "buffer_compress_chunk": "none",
+    "rwmixwrite": 0
 }
 
 # for the metrics, also create "human readable" columns that convert the number to appropriate units
