@@ -9,7 +9,7 @@ group_reporting
 allow_file_create=1
 directory=/mnt/zrammnt1-zstd
 ; directory=/mnt/ssd0/adnan
-rw=read
+rw=write
 buffer_compress_percentage=50
 ; refill_buffers
 buffer_compress_chunk=256

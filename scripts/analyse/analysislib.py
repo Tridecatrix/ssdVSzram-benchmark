@@ -104,7 +104,7 @@ def format_time(time_in_ns):
 #        been ironed out yet, e.g. how would the legend work for something like this?
 def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], 
                    l=0.7, d=None, labels=None, show=True, colors=None, xpos=[], 
-                   fontsize=10, create_new_figure=True, ax=None):
+                   fontsize=10, create_new_figure=True, ax=None, yerr=None):
     
     # Use provided axes object (could be BrokenAxes) or create new figure
     if ax is None:
@@ -133,28 +133,36 @@ def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4
         assert(len(xpos) == len(yss[0]))
         
     for i, ys in enumerate(yss):
+        # Get error values for this series if yerr is provided
+        err_vals = None
+        if yerr is not None:
+            if isinstance(yerr[0], list):  # yerr is a list of lists (one for each series)
+                err_vals = yerr[i] if i < len(yerr) else None
+            else:  # yerr is a single list (same errors for all series)
+                err_vals = yerr
+        
         if labels == None:
             if colors == None:
                 if is_plt:
-                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3)
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, yerr=err_vals, capsize=5)
                 else:
-                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3)
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, yerr=err_vals, capsize=5)
             else:
                 if is_plt:
-                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i])
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i], yerr=err_vals, capsize=5)
                 else:
-                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i])
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, color=colors[i], yerr=err_vals, capsize=5)
         else:
             if colors == None:
                 if is_plt:
-                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i])
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], yerr=err_vals, capsize=5)
                 else:
-                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i])
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], yerr=err_vals, capsize=5)
             else:
                 if is_plt:
-                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i])
+                    plt.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i], yerr=err_vals, capsize=5)
                 else:
-                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i])
+                    ax.bar(xpos - l/2 + w/2 + i*w, ys, d, zorder=3, label=labels[i], color=colors[i], yerr=err_vals, capsize=5)
     
     # Handle xticks differently for different axes types
     if is_plt:
@@ -208,9 +216,15 @@ def unflatten_ys(xs, ys, roworder=True):
     return yss
 
 # Version of grouped barplot where yss is a flattened list, and the grouping is inferred
-def grouped_barplot_flat(xs, ys, roworder=True, **kwargs):
+def grouped_barplot_flat(xs, ys, roworder=True, yerr=None, **kwargs):
     yss = unflatten_ys(xs, ys, roworder)
-    grouped_barplot(xs, yss, **kwargs)
+    
+    # Handle yerr unflattening if provided
+    yerr_unflattened = None
+    if yerr is not None:
+        yerr_unflattened = unflatten_ys(xs, yerr, roworder)
+    
+    grouped_barplot(xs, yss, yerr=yerr_unflattened, **kwargs)
 
 # Function created by AI; for plotting CPU utilisation stacks for groups of configurations.
 # The default parameters fit the tables used for 2025 honours project.
