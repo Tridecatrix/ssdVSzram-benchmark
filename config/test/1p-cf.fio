@@ -1,13 +1,15 @@
 [job]
 numa_cpu_nodes=0
-direct=1
-bs=4K
+direct=0
+bs=1M
 ioengine=sync
 numjobs=1
-size=10G
+size=32G
 group_reporting
 allow_file_create=1
 ; directory=/mnt/ssd/adnan/bench
 ; directory=/mnt/ssd0/adnan/bench
-directory=/mnt/zrammnt1-zstd
-rw=randwrite
+directory=/mnt/tmpfs
+rw=read
+runtime=30
+time_based

@@ -15,6 +15,7 @@ BEGIN {
     compr_total = 0
     count = 0
     first_data_bytes = 0
+    first_compr_bytes = 0
     startup_skipped = 0
     ratio_total = 0
     ratio_sum_sq = 0
@@ -41,6 +42,9 @@ $1 == "mmstat" {
     # Set first data value for startup baseline
     if (!first_set) {
         first_data_bytes = data_bytes
+        first_compr_bytes = compr_bytes
+        first_same_pages = same_pages
+        first_huge_pages = huge_pages
         first_set = 1
     }
     
@@ -54,10 +58,10 @@ $1 == "mmstat" {
     }
     
     # Accumulate data
-    data_total += data_bytes
-    compr_total += compr_bytes
-    huge_pages_total += huge_pages
-    same_pages_total += same_pages
+    data_total += data_bytes - first_data_bytes
+    compr_total += compr_bytes - first_compr_bytes
+    huge_pages_total += huge_pages - first_huge_pages
+    same_pages_total += same_pages - first_same_pages
     
     # Track maximums
     if (data_bytes > max_data) {
