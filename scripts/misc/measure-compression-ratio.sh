@@ -31,6 +31,8 @@ for bc in "${dacapo_benchs[@]}"; do
       SUBDIR=$RESULTSDIR/$bc-$dumpi/${dev_names[$di]}
       mkdir -p $SUBDIR
 
+      echo "`date +%F/%H:%M:%S:` begin dump $bc-$dumpi for device ${dev_names[$di]}"
+
       # remove all files existing there except for lost+found, and issue fstrim
       find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
       sudo fstrim ${dev_paths[$di]}
@@ -41,6 +43,8 @@ for bc in "${dacapo_benchs[@]}"; do
       MONITORPID=$!
       sleep 10 # wait for the fstrim to register
       kill $MONITORPID
+      
+      echo "`date +%F/%H:%M:%S:` cleared device"
 
       # Collect zram usage before (should be mostly empty after cleanup)
       $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage.txt ${dev_names_sys[$di]} --once
@@ -49,15 +53,12 @@ for bc in "${dacapo_benchs[@]}"; do
       cp dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
       sync ${dev_paths[$di]}/$bc-$dumpi.hprof
 
-      $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage_after_sync.txt ${dev_names_sys[$di]} &
-      MONITORPID=$!
-      sleep 5 # wait a bit to allow zram stats to stabilize
-      kill $MONITORPID
-      
+      echo "`date +%F/%H:%M:%S:` copied dump"
+
       # Collect zram usage after copying the file
       $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage.txt ${dev_names_sys[$di]} --once
 
-      echo "`date +%F/%H:%M:%S:` analysed heap compression of dump $bc-$i for device ${dev_names[$di]}"
+      echo "`date +%F/%H:%M:%S:` analysed heap compression of dump $bc-$dumpi for device ${dev_names[$di]}"
     done
   done
 done
