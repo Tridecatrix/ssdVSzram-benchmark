@@ -7,7 +7,7 @@ mkdir -p $RESULTSDIR
 
 # zram device settings
 dev_names=("zram0" "zram1" "zram2") # (informal) device names
-dev_paths=("$HOMEdir/zrammnt0-lzo" "$HOMEdir/zrammnt1-zstd" "$HOMEdir/zrammnt2-lz4") # paths where job files should be stored for each device
+dev_paths=("/mnt/zrammnt0-lzo" "/mnt/zrammnt1-zstd" "/mnt/zrammnt2-lz4") # paths where job files should be stored for each device
 dev_names_sys=("/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files for each device
 dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
@@ -28,7 +28,7 @@ for bc in "${dacapo_benchs[@]}"; do
 
       # remove all files existing there except for lost+found, and issue fstrim
       find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
-      fstrim ${dev_paths[$di]}
+      sudo fstrim ${dev_paths[$di]}
 
       # Monitor zram usage during sleep to verify data has been cleared
 
