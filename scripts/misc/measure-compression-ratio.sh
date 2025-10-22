@@ -15,15 +15,20 @@ dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
 dacapo_benchs=($dacapo_benchs)
 
+maxdumps=5
+
 # iterate through each heap dump, ignoring the first and last from each benchmark
 for bc in "${dacapo_benchs[@]}"; do
-  ndumps=`find $HOMEdir/dumps -name $bc-*.hprof | wc -l`
+  ndumps=$(find $HOMEdir/dumps -name $bc-*.hprof | wc -l)
+  ndumpsToRun=$(( maxdumps > ndumps ? ndumps : maxdumps ))
 
-  # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
-  for i in `seq 0 $(($ndumps-2))`; do
+  for i in $(seq $ndumpsToRun); do
+    dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
+
+    # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
     for di in ${!dev_names[@]}; do
       # Create device-specific subdirectories
-      SUBDIR=$RESULTSDIR/$bc-$i/${dev_names[$di]}
+      SUBDIR=$RESULTSDIR/$bc-$dumpi/${dev_names[$di]}
       mkdir -p $SUBDIR
 
       # remove all files existing there except for lost+found, and issue fstrim
@@ -41,8 +46,8 @@ for bc in "${dacapo_benchs[@]}"; do
       $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage.txt ${dev_names_sys[$di]} --once
 
       # copy over the heap file and issue sync
-      cp dumps/$bc-$i.hprof ${dev_paths[$di]}
-      sync ${dev_paths[$di]}/$bc-$i.hprof
+      cp dumps/$bc-$dumpi.hprof ${dev_paths[$di]}
+      sync ${dev_paths[$di]}/$bc-$dumpi.hprof
 
       $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage_after_sync.txt ${dev_names_sys[$di]} &
       MONITORPID=$!
