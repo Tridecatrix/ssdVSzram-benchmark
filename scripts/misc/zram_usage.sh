@@ -21,6 +21,14 @@ echoheader() {
 # Output file name
 OUTPUT=$1        
 ZRAMDEV=$(echo $2 | awk -F/ '{print $NF}')
+ONCE_FLAG=$3
+
+# Check for --once flag
+if [[ "$ONCE_FLAG" == "--once" || "$ONCE_FLAG" == "-o" ]]; then
+    RUN_ONCE=true
+else
+    RUN_ONCE=false
+fi
 
 if [[ ${ZRAMDEV:0:4} != "zram" ]]; then
     echo "Device $ZRAMDEV is not a zram device" >> "${OUTPUT}"
@@ -32,12 +40,22 @@ echo 0 | sudo tee /sys/block/${ZRAMDEV}/mem_used_max > /dev/null
 
 # Echo header line (for human readability)
 echoheader >> "${OUTPUT}"
-while true; do
-    # zramctl --output-all >> "${OUTPUT}"
+
+if [[ "$RUN_ONCE" == "true" ]]; then
+    # Run only once
     echo "iostat  $(cat /sys/block/${ZRAMDEV}/io_stat)" >> "${OUTPUT}"
     echo "mmstat  $(cat /sys/block/${ZRAMDEV}/mm_stat)" >> "${OUTPUT}"
     echo "bdstat  $(cat /sys/block/${ZRAMDEV}/bd_stat)" >> "${OUTPUT}"
     echo >> "${OUTPUT}"
-    
-    sleep 1
-done
+else
+    # Run continuously
+    while true; do
+        # zramctl --output-all >> "${OUTPUT}"
+        echo "iostat  $(cat /sys/block/${ZRAMDEV}/io_stat)" >> "${OUTPUT}"
+        echo "mmstat  $(cat /sys/block/${ZRAMDEV}/mm_stat)" >> "${OUTPUT}"
+        echo "bdstat  $(cat /sys/block/${ZRAMDEV}/bd_stat)" >> "${OUTPUT}"
+        echo >> "${OUTPUT}"
+        
+        sleep 1
+    done
+fi

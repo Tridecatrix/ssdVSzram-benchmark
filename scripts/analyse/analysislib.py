@@ -80,11 +80,20 @@ def format_time(time_in_ns):
 
 # Generic function for making a grouped bar plot.
 #
-# Required args: 
+# Can work with either traditional arrays OR a DataFrame:
+#
+# Traditional usage: 
 # xs - lists of labels on x axis
 # yss - lists of lists of values on y axis. Each list corresponds to one series.
 #       so if yss = [[1, 2, 3], [4, 5, 6]], two series would be plotted with 3 values on the x
 #       axis, and [1, 2, 3] plotted in one color while [4, 5, 6] is plotted in another.
+#
+# DataFrame usage:
+# df - DataFrame containing the data
+# grouping_col - Column name to group by (these become the x-axis categories)
+# config_col - Column name for the different series within each group
+# value_col - Column name containing the values to plot
+# error_col - Optional column name containing error values
 #
 # Optional args:
 # xlabel - x axis label
@@ -102,9 +111,66 @@ def format_time(time_in_ns):
 #        defaults to range(0, len(xs)). expected use case is if using multiple calls to this function, e.g. some bars are different color
 #        e.g. if you want some sets of bars to be a different color, but there are some issues with this that haven't
 #        been ironed out yet, e.g. how would the legend work for something like this?
-def grouped_barplot(xs, yss, xlabel=None, ylabel=None, title=None, figsize=[8, 4], 
+def grouped_barplot(xs=None, yss=None, df=None, grouping_col=None, config_col=None, value_col=None, error_col=None,
+                   grouping_order=None, config_order=None,
+                   xlabel=None, ylabel=None, title=None, figsize=[8, 4], 
                    l=0.7, d=None, labels=None, show=True, colors=None, xpos=[], 
                    fontsize=10, create_new_figure=True, ax=None, yerr=None):
+    
+    # Handle DataFrame input
+    if df is not None:
+        if grouping_col is None or config_col is None or value_col is None:
+            raise ValueError("When using DataFrame, must specify grouping_col, config_col, and value_col")
+        
+        # Assert that there's exactly one value for each combination
+        combination_counts = df.groupby([grouping_col, config_col]).size()
+        if not all(count == 1 for count in combination_counts):
+            duplicated_combinations = combination_counts[combination_counts != 1]
+            raise ValueError(f"Each combination of {grouping_col} and {config_col} must have exactly one row. "
+                            f"Found multiple/missing rows for: {duplicated_combinations.to_dict()}")
+        
+        # Sort by grouping then config to ensure consistent ordering
+        df_sorted = df.sort_values([grouping_col, config_col]).copy()
+        
+        # Get unique values for x-axis and series labels with custom ordering
+        if config_order is not None:
+            config_values = config_order
+        else:
+            config_values = sorted(df[config_col].unique())
+            
+        if grouping_order is not None:
+            group_values = grouping_order
+        else:
+            group_values = sorted(df[grouping_col].unique())
+            
+        xs = config_values
+        if labels is None:
+            labels = group_values
+        
+        # Create yss and yerr data structures
+        yss = []
+        yerr = []
+        
+        for group in group_values:
+            group_data = []
+            group_errors = []
+            for config in config_values:
+                subset = df_sorted[(df_sorted[grouping_col] == group) & (df_sorted[config_col] == config)]
+                if not subset.empty:
+                    group_data.append(subset[value_col].iloc[0])
+                    if error_col:
+                        group_errors.append(subset[error_col].iloc[0])
+                    else:
+                        group_errors.append(0)
+                else:
+                    group_data.append(0)  # or np.nan
+                    group_errors.append(0)
+            yss.append(group_data)
+            yerr.append(group_errors)
+    
+    # Validate traditional input
+    if xs is None or yss is None:
+        raise ValueError("Must provide either (xs, yss) or (df, grouping_col, config_col, value_col)")
     
     # Use provided axes object (could be BrokenAxes) or create new figure
     if ax is None:

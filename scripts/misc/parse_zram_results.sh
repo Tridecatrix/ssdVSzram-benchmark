@@ -2,14 +2,21 @@
 # filepath: c:\Users\adnan\Desktop\Work\2025\COMP4550_Honours\tera_applications\spark\scripts\parse_zram_results.sh
 
 RESULT_DIR=$1
+SKIP_ENTRIES=${2:-10}  # Default to 10 entries if not provided
+DISABLE_STARTUP_SKIP=${3:-false}  # Default to false (startup skipping enabled)
+STARTUP_THRESHOLD=${4:-10}  # Default to 10% threshold
 
 if [[ -z "$RESULT_DIR" ]]; then
-    echo "Usage: $0 <result_directory>"
+    echo "Usage: $0 <result_directory> [skip_entries] [disable_startup_skip] [startup_threshold]"
+    echo "  result_directory: Directory containing zram_usage.txt"
+    echo "  skip_entries: Number of mmstat entries to skip at start (default: 10)"
+    echo "  disable_startup_skip: Set to 'true' to disable startup detection (default: false)"
+    echo "  startup_threshold: Percentage threshold for startup detection (default: 10)"
     exit 1
 fi
 
 # Single awk command to process all data
-awk '
+awk -v skip_entries="$SKIP_ENTRIES" -v disable_startup_skip="$DISABLE_STARTUP_SKIP" -v startup_threshold="$STARTUP_THRESHOLD" '
 BEGIN {
     data_total = 0
     compr_total = 0
@@ -22,6 +29,8 @@ BEGIN {
     max_data = 0
     max_compr = 0
     first_set = 0
+    entries_skipped = 0
+    entry_count = 0
     
     # New variables for huge_pages and same_pages
     huge_pages_total = 0
@@ -39,7 +48,15 @@ $1 == "mmstat" {
     same_pages = $6     # same_pages is field 6
     huge_pages = $9     # huge_pages is field 9
     
-    # Set first data value for startup baseline
+    entry_count++
+    
+    # Skip first N entries unconditionally
+    if (entry_count <= skip_entries) {
+        entries_skipped++
+        next
+    }
+    
+    # Set first data value for startup baseline (after time skip)
     if (!first_set) {
         first_data_bytes = data_bytes
         first_compr_bytes = compr_bytes
@@ -48,13 +65,15 @@ $1 == "mmstat" {
         first_set = 1
     }
     
-    # Skip startup entries (within 10% of initial value)
-    diff = (data_bytes > first_data_bytes) ? data_bytes - first_data_bytes : first_data_bytes - data_bytes
-    percent_diff = (diff / first_data_bytes) * 100
-    
-    if (percent_diff <= 10) {
-        startup_skipped++
-        next
+    # Skip startup entries (within threshold % of initial value) - only if not disabled
+    if (disable_startup_skip != "true") {
+        diff = (data_bytes > first_data_bytes) ? data_bytes - first_data_bytes : first_data_bytes - data_bytes
+        percent_diff = (first_data_bytes > 0) ? (diff / first_data_bytes) * 100 : 0
+        
+        if (percent_diff <= startup_threshold) {
+            startup_skipped++
+            next
+        }
     }
     
     # Accumulate data
@@ -63,21 +82,26 @@ $1 == "mmstat" {
     huge_pages_total += huge_pages - first_huge_pages
     same_pages_total += same_pages - first_same_pages
     
-    # Track maximums
-    if (data_bytes > max_data) {
-        max_data = data_bytes
-        max_compr = compr_bytes
-        huge_pages_at_max_data = huge_pages
-        same_pages_at_max_data = same_pages
+    # Track maximums (subtract first_data_bytes like for totals)
+    adjusted_data = data_bytes - first_data_bytes
+    adjusted_compr = compr_bytes - first_compr_bytes
+    adjusted_huge_pages = huge_pages - first_huge_pages
+    adjusted_same_pages = same_pages - first_same_pages
+    
+    if (adjusted_data > max_data) {
+        max_data = adjusted_data
+        max_compr = adjusted_compr
+        huge_pages_at_max_data = adjusted_huge_pages
+        same_pages_at_max_data = adjusted_same_pages
     }
-    max_huge_pages = (max_huge_pages > huge_pages) ? max_huge_pages : huge_pages
-    max_same_pages = (max_same_pages > same_pages) ? max_same_pages : same_pages
+    max_huge_pages = (max_huge_pages > adjusted_huge_pages) ? max_huge_pages : adjusted_huge_pages
+    max_same_pages = (max_same_pages > adjusted_same_pages) ? max_same_pages : adjusted_same_pages
     
     count++
     
-    # Calculate ratio and accumulate for standard deviation
-    if (compr_bytes > 0) {
-        ratio = data_bytes / compr_bytes
+    # Calculate ratio and accumulate for standard deviation (use adjusted values)
+    if (adjusted_compr > 0) {
+        ratio = adjusted_data / adjusted_compr
         ratio_total += ratio
         ratio_sum_sq += ratio * ratio
     }
@@ -85,7 +109,8 @@ $1 == "mmstat" {
 
 END {
     if (count == 0) {
-        print "No entries found (or all entries were during startup time)"
+        print "No entries found (or all entries were skipped)"
+        print "Initial entries skipped: " entries_skipped
         print "Startup entries skipped: " startup_skipped
         exit 1
     }
@@ -131,6 +156,7 @@ END {
     printf "SAME_PAGES_AT_MAX_DATA_SIZE,%.0f\n", same_pages_at_max_data
     printf "MAX_SAME_PAGES,%.0f\n", max_same_pages
     printf "AVG_INCOMPRESSIBLE_DATA_MB,%.2f\n", avg_incompressible_mb
+    printf "INITIAL_ENTRIES_SKIPPED,%d\n", entries_skipped
     printf "STARTUP_ENTRIES_SKIPPED,%d\n", startup_skipped
 }
 ' "$RESULT_DIR/zram_usage.txt"

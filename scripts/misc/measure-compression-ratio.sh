@@ -21,26 +21,38 @@ for bc in "${dacapo_benchs[@]}"; do
 
   # ignore the last dump for each benchmark as it may occur after or as the benchmark is ending
   for i in `seq 0 $(($ndumps-2))`; do
-    SUBRDIR=$RESULTSDIR/$bc-$i
-    mkdir -p $SUBRDIR
-
     for di in ${!dev_names[@]}; do
+      # Create device-specific subdirectories
+      SUBDIR=$RESULTSDIR/$bc-$i/${dev_names[$di]}
+      mkdir -p $SUBDIR
+
       # remove all files existing there except for lost+found, and issue fstrim
-      # (note this command is a little broken because it still tries to recurse into the subdirectory lost+found, dunno how to stop that)
       find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
       fstrim ${dev_paths[$di]}
-    done
 
-    zramctl > $SUBRDIR/before
+      # Monitor zram usage during sleep to verify data has been cleared
 
-    for di in ${!dev_names[@]}; do
+      $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage_during_sleep.txt ${dev_names_sys[$di]} &
+      MONITORPID=$!
+      sleep 10 # wait for the fstrim to register
+      kill $MONITORPID
+
+      # Collect zram usage before (should be mostly empty after cleanup)
+      $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage.txt ${dev_names_sys[$di]} --once
+
       # copy over the heap file and issue sync
       cp dumps/$bc-$i.hprof ${dev_paths[$di]}
       sync ${dev_paths[$di]}/$bc-$i.hprof
+
+      $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage_after_sync.txt ${dev_names_sys[$di]} &
+      MONITORPID=$!
+      sleep 5 # wait a bit to allow zram stats to stabilize
+      kill $MONITORPID
+      
+      # Collect zram usage after copying the file
+      $HOMEdir/scripts/misc/zram_usage.sh $SUBDIR/zram_usage.txt ${dev_names_sys[$di]} --once
+
+      echo "`date +%F/%H:%M:%S:` analysed heap compression of dump $bc-$i for device ${dev_names[$di]}"
     done
-
-    zramctl > $SUBRDIR/after
-
-    echo "`date +%F/%H:%M:%S:` analysed heap compression of dump $bc-$i"
   done
 done
