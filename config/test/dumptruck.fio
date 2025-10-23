@@ -1,20 +1,6 @@
 [job]
 numa_cpu_nodes=all
 direct=1
-<<<<<<< HEAD
-bs=64K
-ioengine=sync
-size=10G
-numjobs=1
-group_reporting
-allow_file_create=1
-directory=/mnt/zrammnt1-zstd
-; directory=/mnt/ssd0/adnan
-rw=write
-buffer_compress_percentage=50
-; refill_buffers
-buffer_compress_chunk=256
-=======
 bs=100M
 ioengine=sync
 size=1G
@@ -25,4 +11,3 @@ allow_file_create=1
 directory=/mnt/ssd0/adnan
 rw=write
 buffer_pattern='/mnt/ssd1/adnan/avrora-1.hprof'
->>>>>>> 51e5e3dc (bingus sync (added a bunch of more configs for more tests))
