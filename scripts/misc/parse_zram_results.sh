@@ -63,6 +63,7 @@ $1 == "mmstat" {
         first_same_pages = same_pages
         first_huge_pages = huge_pages
         first_set = 1
+        next
     }
     
     # Skip startup entries (within threshold % of initial value) - only if not disabled
