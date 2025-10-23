@@ -1,0 +1,15 @@
+[job]
+numa_cpu_nodes=${NUMA}
+direct=1
+bs=${BS}
+ioengine=${IOENGINE}
+size=${SIZE_PER_PROC}
+numjobs=${NPROC}
+group_reporting
+allow_file_create=1
+directory=${DIR}
+rw=${RW}
+buffer_compress_percentage=${CMPR_PNT}
+buffer_compress_chunk=256
+runtime=60
+time_based
