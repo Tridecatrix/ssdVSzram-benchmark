@@ -1,4 +1,5 @@
 #!/bin/bash
+# stdbuf -oL nohup ./scripts/misc/measure-compression-ratio.sh | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog'"$(hostname)"'.txt' & disown
 
 HOMEdir=`git rev-parse --show-toplevel`
 RESULTSDIR=$HOMEdir/data/$(date +%F-time-%H-%M-%S)-fourth-run-compression-ratio
@@ -12,7 +13,7 @@ dev_names_sys=("/dev/zram0" "/dev/zram1" "/dev/zram2") # paths to device files f
 dev_names_iostat=("zram0" "zram1" "zram2") # names of devices as given in output of iostat
 
 # dacapo benchmarks
-dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+dacapo_benchs="h2"
 dacapo_benchs=($dacapo_benchs)
 
 maxdumps=5
