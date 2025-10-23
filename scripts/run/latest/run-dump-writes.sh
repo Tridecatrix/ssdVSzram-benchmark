@@ -3,12 +3,12 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/latest/run-dump.sh <config_file.sh> <devicemap.sh> > data/log.txt 2>&1 &
+# nohup ./scripts/run/latest/run-dump-writes.sh <config_file.sh> <devicemap.sh> > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
 # DMAP=?    <- put this in bashrc with the device mapping file
 # CONF=?    <-  replace ? with conf you want to run
-# stdbuf -oL nohup ./scripts/run/latest/run-dump.sh $CONF $DMAP | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog'"$(hostname)"'.txt' & disown
+# stdbuf -oL nohup ./scripts/run/latest/run-dump-writes.sh $CONF $DMAP | tee log.txt | ssh ctoo 'cat /dev/stdin > fioLog'"$(hostname)"'.txt' & disown
 
 # ----------------------------------
 # command line arguments
@@ -208,17 +208,23 @@ for di in "${!dev_names[@]}"; do
       dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
       dumppath=$HOMEdir/dumps/$bc-$dumpi.hprof
 
+      echo $dumppath
+
       for bs in "${block_sizes[@]}"; do
         for nproc in "${nprocs[@]}"; do
           for rw in "${rws[@]}"; do
             for ioengine in "${sync_ioengines[@]}"; do
+              # 1. Remove files
+              echo "$(date +%F/%H:%M:%S) Removing files from ${dev_paths[$di]}"
+              find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
+              # 2. make directory
               echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"
 
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
 
-              # Start zram monitoring if this is a zram device
+              # 3. Start zram monitoring if this is a zram device
               ZRAM_PID=""
               if [[ ${dev_names_sys[$di]} == *"zram"* ]]; then
                 echo "Starting zram monitoring for ${dev_names_sys[$di]}"
@@ -226,11 +232,12 @@ for di in "${!dev_names[@]}"; do
                 ZRAM_PID=$!
               fi
 
+              # 4. do run
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
               BS="$bs" DIR="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" NUMA="$numa" DUMP="$dumppath" NPROC="$nproc" SIZE_PER_PROC="$((totalSize / nproc))" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
               
-              # Stop zram monitoring and parse results if monitoring was started
+              # 5. Stop zram monitoring and parse results if monitoring was started
               if [[ -n "$ZRAM_PID" ]]; then
                 echo "Stopping zram monitoring (PID: $ZRAM_PID)"
                 kill $ZRAM_PID 2>/dev/null
@@ -245,8 +252,8 @@ for di in "${!dev_names[@]}"; do
               
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
-              # 4. Remove files
-              echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
+              # 6. Remove files again
+              echo "$(date +%F/%H:%M:%S) Removing files from ${dev_paths[$di]}"
               find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
               echo ""
 

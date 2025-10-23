@@ -10,4 +10,5 @@ allow_file_create=1
 ; directory=/mnt/zrammnt1-zstd
 directory=/mnt/ssd0/adnan
 rw=write
-buffer_pattern='/mnt/ssd1/adnan/avrora-1.hprof'
+; buffer_pattern='/mnt/ssd1/adnan/avrora-1.hprof'
+buffer_pattern='${DUMP}'

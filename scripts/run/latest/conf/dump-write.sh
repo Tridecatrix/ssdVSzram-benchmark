@@ -42,13 +42,13 @@ numa=all
 block_sizes=100M
 
 # Number of processes
-nprocs=(32)
+nprocs=(1 `nproc --all`)
 
 # IO depths (empty for sync ioengines)
-iodepths=(32)
+iodepths=()
 
 # Read/write patterns
-rws=("rw")
+rws=("write")
 
 # IO engines
 sync_ioengines=("sync")
@@ -57,11 +57,11 @@ async_ioengines=()
 # Dumps
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
 dacapo_benchs=($dacapo_benchs)
-maxdumps=5
+maxdumps=1
 
 # ----------------------------------
 # Experiment naming
 # ----------------------------------
 
 # Optional: customize experiment name
-EXPNAME=test
+EXPNAME=dump-write
