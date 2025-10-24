@@ -20,7 +20,7 @@ totalSize=$((32 * 1024 * 1024 * 1024))
 # Device settings - SSD + ZRAM
 # ----------------------------------
 
-dev_names=("ssd" "zram0" "zram1" "zram2" "ram") # (informal) device names
+dev_names=("zram0" "zram1" "zram2") # (informal) device names
 
 # ----------------------------------
 # Config file paths (will be resolved after HOMEdir is set)
@@ -55,6 +55,7 @@ async_ioengines=()
 
 # Dumps
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
+# dacapo_benchs="avrora"
 dacapo_benchs=($dacapo_benchs)
 maxdumps=2
 

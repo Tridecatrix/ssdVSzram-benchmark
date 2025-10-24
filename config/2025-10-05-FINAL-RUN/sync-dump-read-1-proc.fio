@@ -1,4 +1,4 @@
-[global]
+[job]
 numa_cpu_nodes=${NUMA}
 direct=1
 bs=${BS}
