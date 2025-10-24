@@ -3,7 +3,7 @@
 # run this script with these commands AFTER SETTING NECESSARY PARAMETERS BELOW
 #
 # run while logging the output and error to file:
-# nohup ./scripts/run/latest/run-dump.sh <config_file.sh> <devicemap.sh> > data/log.txt 2>&1 &
+# nohup ./scripts/run/latest/run-dump-read.sh <config_file.sh> <devicemap.sh> > data/log.txt 2>&1 &
 #
 # run while logging the output and error to file both locally and to remote ssh
 # DMAP=?    <- put this in bashrc with the device mapping file

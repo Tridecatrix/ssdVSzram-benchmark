@@ -1,0 +1,9 @@
+[global]
+numa_cpu_nodes=0
+direct=1
+bs=${BS}
+ioengine=${IOENGINE}
+numjobs=1
+group_reporting
+rw=${RW}
+filename=${FILE}
