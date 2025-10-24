@@ -1,9 +1,9 @@
 [global]
-numa_cpu_nodes=0
+numa_cpu_nodes=${NUMA}
 direct=1
 bs=${BS}
 ioengine=${IOENGINE}
 numjobs=1
 group_reporting
 rw=${RW}
-filename=${FILE}
+filename=${LOC}/${FPREFIX}00.hprof

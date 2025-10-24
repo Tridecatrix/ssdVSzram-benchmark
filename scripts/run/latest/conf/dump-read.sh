@@ -27,8 +27,8 @@ dev_names=("ssd" "zram0" "zram1" "zram2" "ram") # (informal) device names
 # ----------------------------------
 
 # These will use HOMEdir which gets set by the main script
-config_path_1proc="config/2025-10-05-FINAL-RUN/sync-dump-read-1-proc.fio"
-config_path_64proc="config/2025-10-05-FINAL-RUN/sync-dump-read-64-proc.fio"
+config_1proc_path="config/2025-10-05-FINAL-RUN/sync-dump-read-1-proc.fio"
+config_64proc_path="config/2025-10-05-FINAL-RUN/sync-dump-read-64-proc.fio"
 
 # ----------------------------------
 # Benchmark parameters
@@ -40,11 +40,11 @@ numa=all
 # Block sizes to test
 block_sizes=(64K)
 
-# Number of processes
-nprocs=(1 $(nproc --all))
-
-# IO depths (for async ioengines)
+# IO depths (for async ioengines) - not used for sync-only configs
 iodepths=()
+
+# Number of processes
+nprocs=(1 64)
 
 # Read/write patterns
 rws=("read")

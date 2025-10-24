@@ -1,5 +1,5 @@
 [global]
-numa_cpu_nodes=0
+numa_cpu_nodes=${NUMA}
 direct=1
 bs=${BS}
 ioengine=${IOENGINE}

@@ -15,7 +15,13 @@ fname=$(basename $INFILE)
 ext="${fname##*.}"
 fname="${fname%.*}" # remove extension
 
-split -n $NP -d $INFILE $OUTDIR/$fname- --additional-suffix=.$ext
+if [ $NP -eq 1 ]; then
+    # Special case for single file - just copy and extend
+    cp $INFILE $OUTDIR/$fname-00.$ext
+else
+    # Split into multiple files
+    split -n $NP -d $INFILE $OUTDIR/$fname- --additional-suffix=.$ext
+fi
 
 # Call extend-file.sh on each split file in parallel
 for i in $(seq -f "%02g" 0 $((NP-1))); do

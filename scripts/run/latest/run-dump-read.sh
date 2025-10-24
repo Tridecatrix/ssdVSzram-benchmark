@@ -85,10 +85,17 @@ dev_names_sys=("${mapped_dev_names_sys[@]}")
 dev_names_iostat=("${mapped_dev_names_iostat[@]}")
 
 # Construct config file paths if they were set as relative paths
-if [ -n "$sync_config_path" ]; then
-    sync_config="$HOMEdir/$sync_config_path"
-elif [ -z "$sync_config" ]; then
-    echo "Error: Neither sync_config nor sync_config_path is set in config file"
+if [ -n "$config_1proc_path" ]; then
+    config_1proc="$HOMEdir/$config_1proc_path"
+elif [ -z "$config_1proc" ]; then
+    echo "Error: Neither config_1proc nor config_1proc_path is set in config file"
+    exit 1
+fi
+
+if [ -n "$config_64proc_path" ]; then
+    config_64proc="$HOMEdir/$config_64proc_path"
+elif [ -z "$config_64proc" ]; then
+    echo "Error: Neither config_64proc nor config_64proc_path is set in config file"
     exit 1
 fi
 
@@ -98,11 +105,11 @@ fi
 
 # The following parameters should now be set by the sourced config file:
 # testrunopt, outputFormat, totalfilesize, dev_names, dev_paths, dev_names_sys,
-# dev_names_iostat, sync_config, block_sizes, nprocs, rws, sync_ioengines,
+# dev_names_iostat, config_1proc, config_64proc, block_sizes, rws, sync_ioengines,
 # dacapo_benchs, maxdumps
 
 # Validate that required variables are set
-required_vars=("dev_names" "dev_paths" "dev_names_sys" "dev_names_iostat" "sync_config" "block_sizes" "nprocs" "rws" "sync_ioengines" "dacapo_benchs" "maxdumps")
+required_vars=("dev_names" "dev_paths" "dev_names_sys" "dev_names_iostat" "config_1proc" "config_64proc" "block_sizes" "nprocs" "rws" "sync_ioengines" "dacapo_benchs" "maxdumps")
 missing_vars=()
 
 for var in "${required_vars[@]}"; do
@@ -179,9 +186,11 @@ touch $RESULTSDIR/fio-config.txt
 echo "Devices: ${dev_names[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Total file size during runs: $totalfilesize" | tee -a $RESULTSDIR/fio-config.txt
 echo "Block sizes: ${block_sizes[@]}" | tee -a $RESULTSDIR/fio-config.txt
-echo "Numbers of processes: ${nprocs[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "Number of processes: ${nprocs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Read/write type options: ${rws[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Sync I/O engines: ${sync_ioengines[@]}" | tee -a $RESULTSDIR/fio-config.txt
+echo "1-process config: $config_1proc" | tee -a $RESULTSDIR/fio-config.txt
+echo "64-process config: $config_64proc" | tee -a $RESULTSDIR/fio-config.txt
 echo "Dacapo benchmarks used: ${dacapo_benchs[@]}" | tee -a $RESULTSDIR/fio-config.txt
 echo "Number of dumps per bench: $maxdumps" | tee -a $RESULTSDIR/fio-config.txt
 
@@ -205,7 +214,7 @@ for di in "${!dev_names[@]}"; do
     ndumpsToRun=$(( maxdumps > ndumps ? ndumps : maxdumps ))
 
     for i in $(seq $ndumpsToRun); do
-      dumpi=$(( (ndumps / ndumpsToRun) * i - 1 ))
+      dumpi=$(( (ndumps / ndumpsToRun) * (i - 1) ))
 
       echo "$(date +%F/%H:%M:%S) Preparing heapdump $bc-$dumpi on device ${dev_names[$di]}"
 
@@ -213,19 +222,30 @@ for di in "${!dev_names[@]}"; do
       echo "$(date +%F/%H:%M:%S) Removing any existing files from ${dev_paths[$di]}"
       find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
 
-      # 2. Split and extend the heap dump
-      echo "$(date +%F/%H:%M:%S) Splitting and extending file"
-      $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} 32 $(($totalfilesize / 32))
-      echo "$(date +%F/%H:%M:%S) Calling sync"
-      sync ${dev_paths[$di]}/*
+      for nproc in "${nprocs[@]}"; do
+        # Determine which config to use based on process count
+        if [ "$nproc" -eq 1 ]; then
+          fio_config="$config_1proc"
+          config_name="1proc"
+        elif [ "$nproc" -eq 64 ]; then
+          fio_config="$config_64proc"
+          config_name="64proc"
+        else
+          echo "Error: No FIO config available for $nproc processes"
+          exit 1
+        fi
 
-      # 3. Run all config combinations on the prepared files
-      for bs in "${block_sizes[@]}"; do
-        for nproc in "${nprocs[@]}"; do
+        # Split and extend the heap dump for this specific process count and benchmark
+        echo "$(date +%F/%H:%M:%S) Splitting and extending file into $nproc parts"
+        $HOMEdir/scripts/misc/split-n-extend.sh $HOMEdir/dumps/$bc-$dumpi.hprof ${dev_paths[$di]} $nproc $(($totalfilesize / $nproc))
+        echo "$(date +%F/%H:%M:%S) Calling sync"
+        sync ${dev_paths[$di]}/*
+
+        # 2. Run all config combinations, splitting files as needed for each process count
+        for bs in "${block_sizes[@]}"; do
           for rw in "${rws[@]}"; do
-            for ioengine in "${sync_ioengines[@]}"; do
-
-              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"
+            for ioengine in "${sync_ioengines[@]}"; do              
+              echo "$(date +%F/%H:%M:%S) Running (engine $ioengine, nproc $nproc, bs $bs, rw $rw) on device ${dev_names[$di]} using heapdump $bc-$dumpi"              
 
               SUBDIR=$RESULTSDIR/$rw/nproc-$nproc/request-size-$bs/sync-$ioengine/${dev_names[$di]}/$bc/dump-$dumpi
               mkdir -p $SUBDIR
@@ -239,9 +259,9 @@ for di in "${!dev_names[@]}"; do
               fi
 
               $HOMEdir/system_util/start_statistics.sh -d $SUBDIR
-              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" FPREFIX="$bc-$dumpi-ext-" fio $sync_config --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
+              BS="$bs" LOC="${dev_paths[$di]}" RW="$rw" IOENGINE="$ioengine" NUMA="$numa" FPREFIX="$bc-$dumpi-ext-" fio "$fio_config" --output="$SUBDIR/fio_out.txt" --output-format=$outputFormat $testrunopt
               $HOMEdir/system_util/stop_statistics.sh -d $SUBDIR
-              
+
               # Stop zram monitoring and parse results if monitoring was started
               if [[ -n "$ZRAM_PID" ]]; then
                 echo "Stopping zram monitoring (PID: $ZRAM_PID)"
@@ -258,16 +278,15 @@ for di in "${!dev_names[@]}"; do
               $HOMEdir/system_util/extract-data.sh -r $SUBDIR -d ${dev_names_iostat[$di]}
 
               echo "$(date +%F/%H:%M:%S) Done"
-              echo ""
             done
           done
         done
-      done
 
-      # 4. Remove the split/extended files before next dump
-      echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
-      find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
-      echo ""
+        # 4. Remove the split/extended files before next dump
+        echo "$(date +%F/%H:%M:%S) Removing split/extended files from ${dev_paths[$di]} before next dump"
+        find ${dev_paths[$di]} -mindepth 1 -maxdepth 1 ! -name "lost+found" -exec rm -rf {} + 2>/dev/null
+        echo ""
+      done
     done
   done
 done
