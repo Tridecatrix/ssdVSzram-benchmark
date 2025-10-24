@@ -57,7 +57,7 @@ async_ioengines=()
 # Dumps
 dacapo_benchs="avrora batik biojava cassandra eclipse fop graphchi h2 h2o jme jython kafka luindex lusearch pmd spring sunflow tomcat tradebeans tradesoap xalan zxing"
 dacapo_benchs=($dacapo_benchs)
-maxdumps=1
+maxdumps=2
 
 # ----------------------------------
 # Experiment naming
