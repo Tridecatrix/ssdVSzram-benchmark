@@ -35,7 +35,7 @@ $1 == "mmstat" {
     # Get DATA and TOTAL columns (fields 2 and 3)
     data_bytes = $2
     compr_bytes = $3
-    same_pages = $6     # same_pages is field 6
+    same_pages = $7     # same_pages is field 6
     huge_pages = $9     # huge_pages is field 9
     
     entry_count++

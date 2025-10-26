@@ -6,6 +6,10 @@ This script reads zram.csv files from each benchmark-dump/device combination and
 a consolidated pandas DataFrame with all metrics. Unlike the original version, this
 handles directory names in the format "benchmark-dump_number" and separates them into
 individual columns.
+
+The script automatically excludes the last dump for each benchmark (e.g., xalan-3 if 
+xalan has dumps 0,1,2,3) since these tend to be considerably smaller as the benchmark
+may be wrapping up.
 """
 
 import pandas as pd
@@ -64,6 +68,7 @@ def parse_benchmark_dump_name(dirname):
 def consolidate_zram_data(data_dir):
     """
     Consolidate all zram.csv files from the given data directory.
+    Excludes the last dump for each benchmark as they tend to be smaller.
     
     Args:
         data_dir (str): Path to the data directory containing benchmark-dump subdirs
@@ -72,6 +77,7 @@ def consolidate_zram_data(data_dir):
         pd.DataFrame: Consolidated dataframe with all metrics
     """
     all_data = []
+    benchmark_max_dumps = {}  # Track the maximum dump number for each benchmark
     
     data_path = Path(data_dir)
     if not data_path.exists():
@@ -80,12 +86,36 @@ def consolidate_zram_data(data_dir):
     # Get all benchmark-dump directories
     benchmark_dump_dirs = [d for d in data_path.iterdir() if d.is_dir()]
     
+    # First pass: identify the maximum dump number for each benchmark
+    print("Identifying maximum dump numbers for each benchmark...")
+    for benchmark_dump_dir in benchmark_dump_dirs:
+        dirname = benchmark_dump_dir.name
+        benchmark_name, dump_number = parse_benchmark_dump_name(dirname)
+        
+        if benchmark_name is not None and dump_number is not None:
+            if benchmark_name not in benchmark_max_dumps:
+                benchmark_max_dumps[benchmark_name] = dump_number
+            else:
+                benchmark_max_dumps[benchmark_name] = max(benchmark_max_dumps[benchmark_name], dump_number)
+    
+    print("Maximum dump numbers by benchmark:")
+    for benchmark, max_dump in sorted(benchmark_max_dumps.items()):
+        print(f"  {benchmark}: {max_dump} (excluding dump {max_dump})")
+    
+    # Second pass: collect data, excluding the last dump for each benchmark
+    excluded_count = 0
     for benchmark_dump_dir in benchmark_dump_dirs:
         dirname = benchmark_dump_dir.name
         benchmark_name, dump_number = parse_benchmark_dump_name(dirname)
         
         if benchmark_name is None or dump_number is None:
             continue  # Skip directories that don't match expected pattern
+        
+        # Skip if this is the last dump for this benchmark
+        if dump_number == benchmark_max_dumps[benchmark_name]:
+            excluded_count += 1
+            print(f"Excluding {benchmark_name} dump {dump_number} (last dump for this benchmark)")
+            continue
         
         # Get all zram device directories (zram0, zram1, zram2, etc.)
         device_dirs = [d for d in benchmark_dump_dir.iterdir() 
@@ -107,8 +137,10 @@ def consolidate_zram_data(data_dir):
             else:
                 print(f"Warning: No data found for {benchmark_name} dump {dump_number} on {device_name}")
     
+    print(f"\nExcluded {excluded_count} benchmark-dump combinations (last dumps)")
+    
     if not all_data:
-        raise ValueError("No zram.csv files found in the data directory")
+        raise ValueError("No zram.csv files found in the data directory after excluding last dumps")
     
     # Create DataFrame
     df = pd.DataFrame(all_data)

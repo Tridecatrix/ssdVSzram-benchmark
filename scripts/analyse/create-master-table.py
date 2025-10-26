@@ -158,7 +158,7 @@ dnameToSysname = {
     "ram": None # TODO: handle RAM correctly
 }
 
-# main table generation code below
+# main table generation code below (not going to lie, it's kind of disgusting lol)
 
 mTable = []
 
@@ -179,7 +179,9 @@ for cname, cjson in allDataJson.items():
         if colpath == "special":
 
             if colname == "cdevice":
-                target = cjson["job options"]["directory"] if "directory" in cjson["job options"] else cjson["job options"]["filename"]
+                target = cjson["job options"]["directory"] if "directory" in cjson["job options"] \
+                          else cjson["job options"]["filename"] if "filename" in cjson["job options"] \
+                          else cjson["job options"]["buffer_pattern"]
 
                 for mntpoint, dname in mntpointToDname.items():
                     if mntpoint in target:
@@ -196,8 +198,8 @@ for cname, cjson in allDataJson.items():
                     value = "none"
             
             if colname == "cfile":
-                if "filename" in cjson["job options"]:
-                    value = cjson["job options"]["filename"].split("/")[-1]
+                if "filename" in cjson["job options"] or "buffer_pattern" in cjson["job options"]:
+                    value = (cjson["job options"]["filename"] if "filename" in cjson["job options"] else cjson["job options"]["buffer_pattern"]).split("/")[-1].strip('\'')
 
                     # note: this is a workaround specifically for experiment 07/07 because I forgot to retain the
                     # name of the benchmark in the initial split-dumps version of the experiment for that
