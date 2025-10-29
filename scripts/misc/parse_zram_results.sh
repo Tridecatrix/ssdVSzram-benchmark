@@ -128,6 +128,8 @@ END {
     page_size = 4096
     avg_incompressible_bytes = avg_huge_pages * page_size
     avg_incompressible_mb = avg_incompressible_bytes / 1048576
+    avg_trivial_bytes = avg_same_pages * page_size
+    avg_trivial_mb = avg_trivial_bytes / 1048576
     
     # Calculate standard deviation of compression ratio
     if (count > 1) {
@@ -157,6 +159,7 @@ END {
     printf "SAME_PAGES_AT_MAX_DATA_SIZE,%.0f\n", same_pages_at_max_data
     printf "MAX_SAME_PAGES,%.0f\n", max_same_pages
     printf "AVG_INCOMPRESSIBLE_DATA_MB,%.2f\n", avg_incompressible_mb
+    printf "AVG_TRIVIALLY_COMPRESSIBLE_DATA_MB,%.2f\n", avg_trivial_mb
     printf "INITIAL_ENTRIES_SKIPPED,%d\n", entries_skipped
     printf "STARTUP_ENTRIES_SKIPPED,%d\n", startup_skipped
 }
